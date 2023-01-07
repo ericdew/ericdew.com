@@ -1,0 +1,27 @@
+---
+import { Icon } from 'astro-icon';
+---
+
+<div class="social">
+    <a href="mailto:me@ericdew.com"><Icon name="envelope" /></a>
+    <a href="https://www.instagram.com/ericdew/"><Icon name="instagram" /></a>
+    <a href="https://twitter.com/ericdew"><Icon name="twitter" /></a>
+</div>
+
+<style>
+    [astro-icon] {
+        transition: fill 300ms ease;
+    }
+
+    [astro-icon="envelope"]:hover {
+        fill: #EA4335;
+    }
+
+    [astro-icon="instagram"]:hover {
+        fill: #C13584;
+    }
+
+    [astro-icon="twitter"]:hover {
+        fill: #1DA1F2;
+    }
+</style>

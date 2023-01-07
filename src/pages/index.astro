@@ -1,21 +1,17 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import { Icon } from 'astro-icon';
+import Social from '../components/Social.astro';
 ---
 
 <Layout title="Eric Dew">
 	<main>
 		<h1>Eric Dew</h1>
 
-		<div class="social">
-			<a href="mailto:me@ericdew.com"><Icon name="envelope" /></a>
-			<a href="https://www.instagram.com/ericdew/"><Icon name="instagram" /></a>
-			<a href="https://twitter.com/ericdew"><Icon name="twitter" /></a>
-		</div>
+		<Social />
 
 		<p class="instructions">Based in San Francisco, CA</p>
-		
+
 		<ul role="list" class="link-card-grid">
 			<Card
 				href="https://docs.astro.build/"
