@@ -2,40 +2,14 @@
 import { Icon } from 'astro-icon';
 ---
 
-<div class="social">
-    <a href="mailto:me@ericdew.com"><Icon name="envelope" /></a>
-    <a href="https://www.instagram.com/ericdew/"><Icon name="instagram" /></a>
-    <a href="https://twitter.com/ericdew"><Icon name="twitter" /></a>
+<div class="grid grid-flow-col gap-4 place-content-center my-4">
+    {[
+        ['envelope', 'hover:fill-[#EA4335]', 'mailto:me@ericdew.com'],
+        ['instagram', 'hover:fill-[#C13584]', 'https://www.instagram.com/ericdew/'],
+        ['twitter', 'hover:fill-[#1DA1F2]', 'mailto:me@ericdew.com'],
+    ].map(([icon, color, url]) => (
+        <a href={url} class={`w-8 fill-neutral-900 dark:fill-slate-100 ${color} dark:${color}`}>
+            <Icon name={icon} class="transition ease-in-out duration-300" />
+        </a>
+    ))}
 </div>
-
-<style>
-    .social {
-        display: grid;
-        grid-auto-flow: column;
-        align-items: center;
-        gap: 1em;
-        place-content: center;
-        margin-top: 1em;
-        margin-bottom: 1em;
-    }
-
-    a {
-        width: 2em;
-    }
-
-    [astro-icon] {
-        transition: fill 300ms ease;
-    }
-
-    [astro-icon="envelope"]:hover {
-        fill: #EA4335;
-    }
-
-    [astro-icon="instagram"]:hover {
-        fill: #C13584;
-    }
-
-    [astro-icon="twitter"]:hover {
-        fill: #1DA1F2;
-    }
-</style>

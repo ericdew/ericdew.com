@@ -6,27 +6,7 @@ export interface Props {
 const { src } = Astro.props;
 ---
 
-<div class="img-wrapper">
-    <div></div>
-    <img src={src} />
+<div class="relative m-0.5">
+    <div class="block"></div>
+    <img src={src} class="absolute align-bottom top-0 w-full h-full object-cover" />
 </div>
-
-<style>
-    .img-wrapper {
-        margin: 2px;
-        position: relative;
-    }
-
-    div div {
-        display: block;
-    }
-
-    img {
-        position: absolute;
-        vertical-align: bottom;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-</style>

@@ -2,7 +2,7 @@
 import GalleryImage from "./GalleryImage.astro";
 ---
 
-<div class="gallery">
+<div class="gallery flex flex-wrap m-0.5">
     <GalleryImage src="/images/1-DEW08959.jpg" />
     <GalleryImage src="/images/DEW00365_1.jpg" />
     <GalleryImage src="/images/DEW02999_1.jpg" />
@@ -17,32 +17,12 @@ import GalleryImage from "./GalleryImage.astro";
     <GalleryImage src="/images/DEW02999_1.jpg" />
     <GalleryImage src="/images/DEW03975-Edit.jpg" />
     <GalleryImage src="/images/DEW07080.jpg" />
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
-    <div class="placeholder"></div>
+
+    <!-- placeholders required to properly size images in the last/incomplete row -->
+    {Array.from({length: 10}, () => (
+        <div class="grow-[100] basis-[240px] h-0 m-0"></div>
+    ))}
 </div>
-
-<style>
-    .gallery {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 2px;
-    }
-
-    .placeholder {
-        flex-grow: 100;
-        flex-basis: 240px;
-        height: 0;
-        margin: 0;
-    }
-</style>
 
 <script>
   const images = document.querySelectorAll('.gallery img');
