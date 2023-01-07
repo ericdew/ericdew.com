@@ -1,16 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import Social from '../components/Social.astro';
+import Header from '../components/Header.astro';
 ---
 
 <Layout title="Eric Dew">
 	<main>
-		<h1>Eric Dew</h1>
-
-		<Social />
-
-		<p class="instructions">Based in San Francisco, CA</p>
+		<Header />
 
 		<ul role="list" class="link-card-grid">
 			<Card
@@ -43,11 +39,7 @@ import Social from '../components/Social.astro';
 		padding: 1.5rem;
 		max-width: 60ch;
 	}
-	h1 {
-		font-size: 3rem;
-		font-weight: 800;
-		margin: 0;
-	}
+	
 	.text-gradient {
 		background-image: var(--accent-gradient);
 		-webkit-background-clip: text;

@@ -9,6 +9,20 @@ import { Icon } from 'astro-icon';
 </div>
 
 <style>
+    .social {
+        display: grid;
+        grid-auto-flow: column;
+        align-items: center;
+        gap: 1em;
+        place-content: center;
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+
+    a {
+        width: 2em;
+    }
+
     [astro-icon] {
         transition: fill 300ms ease;
     }
