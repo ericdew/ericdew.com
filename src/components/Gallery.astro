@@ -25,22 +25,28 @@ import GalleryImage from "./GalleryImage.astro";
 </div>
 
 <script>
-  const images = document.querySelectorAll('.gallery img');
+    const imageElements = document.querySelectorAll('.gallery img');
 
-  images.forEach((image) => {
-        const element = image as HTMLImageElement;
-        const height = element.naturalHeight;
-        const width = element.naturalWidth;
-        const flex = width * 300 / height;
-        const padding = height / width * 100;
+    imageElements.forEach((imageElement) => {
+        const image = imageElement as HTMLImageElement;
 
-        if (element.parentElement) {
-            element.parentElement.style.flexGrow = flex + "";
-            element.parentElement.style.flexBasis = flex + "px";
+        const height = image.naturalHeight;
+        const width = image.naturalWidth;
+        
+        const parent = image.parentElement;
+
+        if (parent) {
+            const flex = width * 300 / height;
+
+            parent.style.flexGrow = flex + "";
+            parent.style.flexBasis = flex + "px";
+
+            const firstChild = parent.firstElementChild as HTMLElement;
             
-            if (element.parentElement.firstElementChild) {
-                (element.parentElement.firstElementChild as HTMLElement).style.paddingBottom = padding + "%";
+            if (firstChild) {
+                const padding = height / width * 100;
+                firstChild.style.paddingBottom = padding + "%";
             }
         }
-  });
+    });
 </script>
