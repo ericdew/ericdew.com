@@ -29,13 +29,11 @@ import GalleryImage from "./GalleryImage.astro";
 
     imageElements.forEach((imageElement) => {
         const image = imageElement as HTMLImageElement;
-
-        const height = image.naturalHeight;
-        const width = image.naturalWidth;
-        
         const parent = image.parentElement;
 
         if (parent) {
+            const height = image.naturalHeight;
+            const width = image.naturalWidth;
             const flex = width * 300 / height;
 
             parent.style.flexGrow = flex + "";
