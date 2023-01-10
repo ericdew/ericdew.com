@@ -8,6 +8,7 @@ export default defineConfig({
     tailwind(),
     image({
       serviceEntryPoint: '@astrojs/image/sharp',
+      logLevel: 'debug',
     }),
   ]
 });

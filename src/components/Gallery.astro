@@ -20,17 +20,17 @@ cloudinary.config({
     cloud_name: import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME,
     api_key: import.meta.env.PUBLIC_CLOUDINARY_API_KEY,
     api_secret: import.meta.env.SECRET_CLOUDINARY_API_KEY,
-    // secure: true,
+    secure: true,
 });
 
-const cloudinary_search = await cloudinary.search
+const search = await cloudinary.search
     .expression(`folder:${folder}`)
     .with_field('context')
     .sort_by('filename', 'asc')
     .max_results(500)
     .execute();
 
-const images = cloudinary_search.resources as CloudinaryImage[];
+const images = search.resources as CloudinaryImage[];
 ---
 
 <div class="gallery flex flex-wrap m-0.5">
