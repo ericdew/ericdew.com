@@ -20,7 +20,7 @@ cloudinary.config({
     cloud_name: import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME,
     api_key: import.meta.env.PUBLIC_CLOUDINARY_API_KEY,
     api_secret: import.meta.env.SECRET_CLOUDINARY_API_KEY,
-    secure: true,
+    // secure: true,
 });
 
 const cloudinary_search = await cloudinary.search
@@ -45,6 +45,7 @@ const images = cloudinary_search.resources as CloudinaryImage[];
                 sizes="(min-width: 1150px) 50vw, (min-width: 900px) 75vw, 100vw" // various layout breakpoints
                 class="easeload absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000"
                 onload="this.style.opacity=1" // fade in image after loading
+                loading="lazy"
                 alt={`"Concert Photograph by Eric Dew${CloudinaryImage.context ? " of " + CloudinaryImage.context.alt : ""}`} />
         </div>
     ))}
