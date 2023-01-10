@@ -4,11 +4,11 @@ import { Icon } from 'astro-icon';
 
 <div class="grid grid-flow-col gap-4 place-content-center my-4">
     {[
-        ['envelope', 'hover:fill-[#EA4335]', 'mailto:me@ericdew.com'],
-        ['instagram', 'hover:fill-[#C13584]', 'https://www.instagram.com/ericdew/'],
-        ['twitter', 'hover:fill-[#1DA1F2]', 'mailto:me@ericdew.com'],
+        ['envelope', 'hover:fill-[#EA4335] dark:hover:fill-[#EA4335]', 'mailto:me@ericdew.com'],
+        ['instagram', 'hover:fill-[#C13584] dark:hover:fill-[#C13584]', 'https://www.instagram.com/ericdew/'],
+        ['twitter', 'hover:fill-[#1DA1F2] dark:hover:fill-[#1DA1F2]', 'https://twitter.com/ericdew'],
     ].map(([icon, color, url]) => (
-        <a href={url} class={`w-8 fill-neutral-900 dark:fill-slate-100 ${color} dark:${color}`}>
+        <a href={url} class={`w-8 fill-neutral-900 dark:fill-slate-100 ${color}`}>
             <Icon name={icon} class="transition ease-in-out duration-300" />
         </a>
     ))}
