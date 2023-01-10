@@ -1,64 +1,50 @@
 ---
-import { Cloudinary } from '@cloudinary/url-gen';
+import { v2 as cloudinary } from 'cloudinary'
 import { Picture } from '@astrojs/image/components';
 
 export interface Props {
 	folder: string;
 };
 
-export interface Resource {
-    url: string;
+export interface CloudinaryImage {
+    secure_url: string;
     width: number;
     height: number;
+    aspect_ratio: number;
+    context: { alt: string };
 };
 
-// folder name to pull from Cloudinary
 const { folder } = Astro.props;
 
-// keys necessary to fetch images via Cloudinary API
-const cloud_name = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
-const public_api_key = import.meta.env.PUBLIC_CLOUDINARY_API_KEY;
-const secret_api_key = import.meta.env.SECRET_CLOUDINARY_API_KEY;
-const header_auth = `Basic ${btoa(`${public_api_key}:${secret_api_key}`)}`;
+cloudinary.config({
+    cloud_name: import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME,
+    api_key: import.meta.env.PUBLIC_CLOUDINARY_API_KEY,
+    api_secret: import.meta.env.SECRET_CLOUDINARY_API_KEY,
+    secure: true,
+});
 
-// build the fetch input query
-const headers = new Headers({ 'Authorization': header_auth });
-const input = `https://api.cloudinary.com/v1_1/${cloud_name}/resources/image/upload?prefix=${folder}&max_results=500`;
+const cloudinary_search = await cloudinary.search
+    .expression(`folder:${folder}`)
+    .with_field('context')
+    .sort_by('filename', 'asc')
+    .execute();
 
-// fetch all images from Cloudinary in the folder
-const response = await fetch(input, {headers: headers});
-const data = await response.json();
-
-// build the Cloudinary URL Gen
-const cld = new Cloudinary({ cloud: { cloudName: cloud_name } });
-
-// optimize and format each image and record dimensions
-const resources: Resource[] = [];
-
-data.resources.map((resource: {secure_url: string, width: number, height: number}) => {
-    const image = cld.image(resource.secure_url);
-
-    resources.push({
-        url: image.format('auto').quality('auto').setDeliveryType('fetch').toURL(),
-        width: resource.width,
-        height: resource.height,
-    });
-})
+const images = cloudinary_search.resources as CloudinaryImage[];
 ---
 
 <div class="gallery flex flex-wrap m-0.5">
     
-    {resources.map((Resource) => (
-        <div class="relative m-0.5" style={`flex-grow: ${Resource.width * 300 / Resource.height}; flex-basis: ${Resource.width * 300 / Resource.height}px;`}>
-            <div class="block" style={`padding-bottom: ${Resource.height / Resource.width * 100}%`}></div>
+    {images.map((CloudinaryImage) => (
+        <div class="relative m-0.5" style={`flex-grow: ${CloudinaryImage.width * 300 / CloudinaryImage.height}; flex-basis: ${CloudinaryImage.width * 300 / CloudinaryImage.height}px;`}>
+            <div class="block" style={`padding-bottom: ${CloudinaryImage.height / CloudinaryImage.width * 100}%`}></div>
             <Picture
-                src={Resource.url}
-                aspectRatio={`${Resource.width}:${Resource.height}`}
+                src={CloudinaryImage.secure_url}
+                aspectRatio={CloudinaryImage.aspect_ratio}
                 widths={[2000, 1200, 800]}
                 sizes="(min-width: 1150px) 50vw, (min-width: 900px) 75vw, 100vw" // various layout breakpoints
                 class="easeload absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000"
                 onload="this.style.opacity=1" // fade in image after loading
-                alt="Concert Photograph by Eric Dew" />
+                alt={`"Concert Photograph by Eric Dew${CloudinaryImage.context ? " of " + CloudinaryImage.context.alt : ""}`} />
         </div>
     ))}
 
