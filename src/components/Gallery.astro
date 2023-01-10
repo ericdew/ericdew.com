@@ -3,7 +3,7 @@ import { Cloudinary } from '@cloudinary/url-gen';
 import { Picture } from '@astrojs/image/components';
 
 export interface Props {
-	gallery: string;
+	folder: string;
 };
 
 export interface Resource {
@@ -13,7 +13,7 @@ export interface Resource {
 };
 
 // folder name to pull from Cloudinary
-const { gallery } = Astro.props;
+const { folder } = Astro.props;
 
 // keys necessary to fetch images via Cloudinary API
 const cloud_name = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -23,9 +23,9 @@ const header_auth = `Basic ${btoa(`${public_api_key}:${secret_api_key}`)}`;
 
 // build the fetch input query
 const headers = new Headers({ 'Authorization': header_auth });
-const input = `https://api.cloudinary.com/v1_1/${cloud_name}/resources/image/upload?prefix=${gallery}&max_results=500`;
+const input = `https://api.cloudinary.com/v1_1/${cloud_name}/resources/image/upload?prefix=${folder}&max_results=500`;
 
-// fetch all images from Cloudinary in the folder/gallery
+// fetch all images from Cloudinary in the folder
 const response = await fetch(input, {headers: headers});
 const data = await response.json();
 
