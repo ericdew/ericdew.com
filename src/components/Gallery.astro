@@ -1,50 +1,70 @@
 ---
-import GalleryImage from "./GalleryImage.astro";
+import { Cloudinary } from '@cloudinary/url-gen';
+import { Picture } from '@astrojs/image/components';
+
+export interface Props {
+	gallery: string;
+};
+
+export interface Resource {
+    url: string;
+    width: number;
+    height: number;
+};
+
+// folder name to pull from Cloudinary
+const { gallery } = Astro.props;
+
+// keys necessary to fetch images via Cloudinary API
+const cloud_name = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
+const public_api_key = import.meta.env.PUBLIC_CLOUDINARY_API_KEY;
+const secret_api_key = import.meta.env.SECRET_CLOUDINARY_API_KEY;
+const header_auth = `Basic ${btoa(`${public_api_key}:${secret_api_key}`)}`;
+
+// build the fetch input query
+const headers = new Headers({ 'Authorization': header_auth });
+const input = `https://api.cloudinary.com/v1_1/${cloud_name}/resources/image/upload?prefix=${gallery}&max_results=500`;
+
+// fetch all images from Cloudinary in the folder/gallery
+const response = await fetch(input, {headers: headers});
+const data = await response.json();
+
+// build the Cloudinary URL Gen
+const cld = new Cloudinary({ cloud: { cloudName: cloud_name } });
+
+// optimize and format each image and record dimensions
+const resources: Resource[] = [];
+
+data.resources.map((resource: {secure_url: string, width: number, height: number}) => {
+    const image = cld.image(resource.secure_url);
+
+    resources.push({
+        url: image.format('auto').quality('auto').setDeliveryType('fetch').toURL(),
+        width: resource.width,
+        height: resource.height,
+    });
+})
 ---
 
 <div class="gallery flex flex-wrap m-0.5">
-    <GalleryImage src="/images/1-DEW08959.jpg" />
-    <GalleryImage src="/images/DEW00365_1.jpg" />
-    <GalleryImage src="/images/DEW02999_1.jpg" />
-    <GalleryImage src="/images/DEW02999_1.jpg" />
-    <GalleryImage src="/images/DEW03975-Edit.jpg" />
-    <GalleryImage src="/images/DEW07080.jpg" />
-    <GalleryImage src="/images/DEW00226.jpg" />
-    <GalleryImage src="/images/DEW00365_1.jpg" />
-    <GalleryImage src="/images/DEW07080.jpg" />
-    <GalleryImage src="/images/DEW00226.jpg" />
-    <GalleryImage src="/images/DEW00365_1.jpg" />
-    <GalleryImage src="/images/DEW02999_1.jpg" />
-    <GalleryImage src="/images/DEW03975-Edit.jpg" />
-    <GalleryImage src="/images/DEW07080.jpg" />
+    
+    {resources.map((Resource) => (
+        <div class="relative m-0.5" style={`flex-grow: ${Resource.width * 300 / Resource.height}; flex-basis: ${Resource.width * 300 / Resource.height}px;`}>
+            <div class="block" style={`padding-bottom: ${Resource.height / Resource.width * 100}%`}></div>
+            <Picture
+                src={Resource.url}
+                aspectRatio={`${Resource.width}:${Resource.height}`}
+                widths={[2000, 1200, 800]}
+                sizes="(min-width: 1150px) 50vw, (min-width: 900px) 75vw, 100vw" // various layout breakpoints
+                class="easeload absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000"
+                onload="this.style.opacity=1" // fade in image after loading
+                alt="Concert Photograph by Eric Dew" />
+        </div>
+    ))}
 
     <!-- placeholders required to properly size images in the last/incomplete row -->
     {Array.from({length: 10}, () => (
         <div class="grow-[100] basis-[240px] h-0 m-0"></div>
     ))}
+
 </div>
-
-<script>
-    const imageElements = document.querySelectorAll('.gallery img');
-
-    imageElements.forEach((imageElement) => {
-        const image = imageElement as HTMLImageElement;
-        const parent = image.parentElement;
-
-        if (parent) {
-            const height = image.naturalHeight;
-            const width = image.naturalWidth;
-            const flex = width * 300 / height;
-
-            parent.style.flexGrow = flex + "";
-            parent.style.flexBasis = flex + "px";
-
-            const firstChild = parent.firstElementChild as HTMLElement;
-            
-            if (firstChild) {
-                const padding = height / width * 100;
-                firstChild.style.paddingBottom = padding + "%";
-            }
-        }
-    });
-</script>
