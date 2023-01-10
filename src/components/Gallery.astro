@@ -27,6 +27,7 @@ const cloudinary_search = await cloudinary.search
     .expression(`folder:${folder}`)
     .with_field('context')
     .sort_by('filename', 'asc')
+    .max_results(500)
     .execute();
 
 const images = cloudinary_search.resources as CloudinaryImage[];
