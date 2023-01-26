@@ -1,6 +1,7 @@
 ---
 import { v2 as cloudinary } from 'cloudinary';
 import { Picture } from '@astrojs/image/components';
+import { Icon } from 'astro-icon';
 
 export interface Props {
 	folder: string;
@@ -33,11 +34,21 @@ const search = await cloudinary.search
 const images = search.resources as CloudinaryImage[];
 ---
 
-<div class="gallery flex flex-wrap m-0.5">
+<div class="flex flex-wrap m-0.5">
     
-    {images.map((CloudinaryImage) => (
-        <div class="relative m-0.5" style={`flex-grow: ${CloudinaryImage.width * 300 / CloudinaryImage.height}; flex-basis: ${CloudinaryImage.width * 300 / CloudinaryImage.height}px;`}>
+    {images.map((CloudinaryImage, index) => (
+        <div
+            data-position={`${index == 0 ? "first" : index + 1 == images.length ? "last" : "middle"}`}
+            onclick="setFullscreen(this)"
+            class="cursor-zoom-in relative m-0.5" style={`flex-grow: ${CloudinaryImage.width * 300 / CloudinaryImage.height}; flex-basis: ${CloudinaryImage.width * 300 / CloudinaryImage.height}px;`}>
+            
             <div class="block" style={`padding-bottom: ${CloudinaryImage.height / CloudinaryImage.width * 100}%`}></div>
+
+            <div role="status" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <Icon name="loading" class="inline w-20 h-20 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" />
+                <span class="sr-only">loading image...</span>
+            </div>
+            
             <Picture
                 src={CloudinaryImage.secure_url}
                 aspectRatio={CloudinaryImage.aspect_ratio}
@@ -47,6 +58,7 @@ const images = search.resources as CloudinaryImage[];
                 onload="this.style.opacity=1" // fade in image after loading
                 loading="lazy"
                 alt={`"Concert Photograph by Eric Dew${CloudinaryImage.context ? " of " + CloudinaryImage.context.alt : ""}`} />
+
         </div>
     ))}
 
@@ -56,3 +68,111 @@ const images = search.resources as CloudinaryImage[];
     ))}
 
 </div>
+
+<div id="fullscreen-controls" class="z-[2] fixed top-0 hidden">
+    <button type="button" onclick="prevImage()" class="h-screen fixed left-0 w-[25vw] opacity-0 hover:opacity-100">
+        <div class="absolute left-0 ml-8 p-4 bg-neutral-700 rounded-full">
+            <Icon name="chevron-left-solid" class="w-6 h-6 fill-slate-100" />
+            <span class="sr-only">previous image</span>
+        </div>
+    </button>
+
+    <button type="button" onclick="nextImage()" class="h-screen fixed right-0 w-[25vw] opacity-0 hover:opacity-100">
+        <div class="absolute right-0 mr-8 p-4 bg-neutral-700 rounded-full">
+            <Icon name="chevron-right-solid" class="w-6 h-6 fill-slate-100" />
+            <span class="sr-only">next image</span>
+        </div>
+    </button>
+
+    <button onclick="escapeFullscreen()" type="button" class="hover:bg-slate-100/10 fixed rounded-full mt-2 ml-2 p-3">
+        <Icon name="xmark-solid" class="w-6 h-6 fill-slate-100" />
+        <span class="sr-only">exit image</span>
+    </button>
+</div>
+
+<style>
+    #fullscreen {
+        position: fixed;
+        z-index: 1;
+        cursor: zoom-out;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background: black;
+        margin: 0;
+    }
+
+    #fullscreen img {
+        object-fit: contain;
+    }
+
+    #fullscreen div[role="status"] {
+        display: block; 
+    }
+</style>
+
+<script client:load>
+    function setFullscreen(element) {
+        element.scrollIntoView();
+        element.id = "fullscreen";
+        document.body.classList.add("overflow-hidden");
+        document.getElementById("fullscreen-controls").classList.remove("hidden");
+    }
+
+    function getFullscreen() {
+        return document.getElementById("fullscreen");
+    }
+
+    function escapeFullscreen() {
+        const fullscreen = getFullscreen();
+
+        if (fullscreen) {
+            fullscreen.removeAttribute("id");
+            document.body.classList.remove("overflow-hidden");
+            document.getElementById("fullscreen-controls").classList.add("hidden");
+        }
+    }
+
+    function nextImage() {
+        const fullscreen = getFullscreen();
+
+        if (fullscreen) {
+            escapeFullscreen();
+            setFullscreen(
+                fullscreen.dataset.position == "last"
+                ? document.querySelector("[data-position='first']")
+                : fullscreen.nextSibling
+            );
+        }
+    }
+
+    function prevImage() {
+        const fullscreen = getFullscreen();
+
+        if (fullscreen) {
+            escapeFullscreen();
+            setFullscreen(
+                fullscreen.dataset.position == "first"
+                ? document.querySelector("[data-position='last']")
+                : fullscreen.previousSibling
+            );
+        }
+    }
+    
+    document.onkeydown = function(event) {
+        const fullscreen = getFullscreen();
+
+        if (!fullscreen) {
+            return;
+        }
+
+        if (event.key == "Escape") {
+            escapeFullscreen();
+        } else if (event.key == "ArrowLeft") {
+            prevImage();
+        } else if (event.key == "ArrowRight") {
+            nextImage();
+        }
+    }
+</script>
