@@ -479,12 +479,13 @@ const resources = search.resources as CloudinaryResource[];
         }
 
         // prevent small movements
-        if (Math.abs(startX - endX) < threshold) {
+        if (Math.abs(startX - endX) < threshold && Math.abs(startY - endY) < threshold) {
             return;
         }
 
-        // prevent vertical scrolling
+        // vertical scrolling
         if (Math.abs(startY - endY) > threshold) {
+            escapeFullscreen();
             return;
         }
 
