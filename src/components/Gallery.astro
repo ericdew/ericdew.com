@@ -65,6 +65,7 @@ const resources = search.resources as CloudinaryResource[];
                     alt={`"Concert Photograph by Eric Dew${CloudinaryResource.context ? " of " + CloudinaryResource.context.alt : ""}`} />
             ) : (
                 <video
+                    id={`video-${index}`}
                     loop webkit-playsinline playsinline
                     preload={`${index <= 5 ? "metadata" : "none"}`}
                     onclick="this.paused ? this.play() : this.pause()"
@@ -77,7 +78,10 @@ const resources = search.resources as CloudinaryResource[];
                 </video>
 
                 <div class="video-duration font-mono absolute top-0 flex items-center bg-gradient-to-b from-black/50 to-transparent w-full justify-end">
-                    <span class="text-xs">{new Date(CloudinaryResource.duration * 1000).toISOString().slice(15, 19)}</span>
+                    <div class="text-xs">
+                        <span id={`current-time-video-${index}`} class="current-time hidden">0:00 / </span>
+                        <span>{new Date(CloudinaryResource.duration * 1000).toISOString().slice(15, 19)}</span>
+                    </div>
                     <Icon name="circle-play-regular" class="fill-slate-100 h-6 m-2" />
                 </div>
             )}
@@ -292,13 +296,16 @@ const resources = search.resources as CloudinaryResource[];
     }
 
     #fullscreen .video-duration {
-        padding-right: 1.25rem;
-        padding-top: 1.25rem;
+        padding-right: 1.5rem;
+        padding-top: 1.5rem;
+    }
+
+    #fullscreen .current-time {
+        display: inline-flex;
     }
 
     #fullscreen .video-duration svg {
-        margin: 0;
-        margin-left: 0.5rem;
+        display: none;
     }
 </style>
 
@@ -490,6 +497,28 @@ const resources = search.resources as CloudinaryResource[];
 
         if (endX < startX) nextImage();
         else if (endX > startX) prevImage();
+    });
+</script>
+
+<!-- handle updating the current time of the video playing when fullscreen -->
+<script client:inline>
+    const videos = document.querySelectorAll("video");
+    const intervals = {};
+
+    videos.forEach(function(video) {
+        const currentTimeSpan = document.getElementById(`current-time-${video.id}`);
+    
+        video.addEventListener("play", () => {
+            intervals[video.id] = setInterval(() => {
+                const minutes = Math.floor(video.currentTime / 60);
+                const seconds = Math.floor(video.currentTime % 60);
+                currentTimeSpan.innerHTML = `${minutes}:${seconds.toString().padStart(2, "0")} / `;
+            }, 500);
+        });
+
+        video.addEventListener("pause", () => {
+            clearInterval(intervals[video.id]);
+        });
     });
 </script>
 
