@@ -11,7 +11,7 @@ const options = {
 const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.preload = "metadata";
+            if (!entry.target.poster) entry.target.poster = entry.target.getAttribute('poster-src');
             observer.unobserve(entry.target);
         }
     });
@@ -36,5 +36,5 @@ function isInViewport(element) {
 window.addEventListener("scroll", () => {
     Array.from(videos)
         .filter(isInViewport)
-        .forEach(video => video.preload = "metadata");
+        .forEach((video) => { if (!video.poster) video.poster = video.getAttribute('poster-src') });
 }, { passive: true });

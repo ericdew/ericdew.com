@@ -67,9 +67,10 @@ const resources = search.resources as CloudinaryResource[];
                 <video
                     id={`video-${index}`}
                     loop webkit-playsinline playsinline
-                    preload={`${index <= 5 ? "metadata" : "none"}`}
+                    preload="none"
                     onclick="this.paused ? this.play() : this.pause()"
                     onmouseover="previewVideo(this)" onmouseout="resetVideo(this)"
+                    poster-src={CloudinaryResource.secure_url.replace(".mp4", ".jpg")}
                     class="absolute align-bottom top-0 w-full h-full object-cover">
 
                     <source src={CloudinaryResource.secure_url} type="video/mp4" />
@@ -327,7 +328,7 @@ const resources = search.resources as CloudinaryResource[];
 
         if (video) {
             video.focus();
-            video.play();
+            if (video.paused) setTimeout(() => { video.play() }, 1);
             video.muted = false;
         }
 
