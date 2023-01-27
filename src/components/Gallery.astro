@@ -66,7 +66,7 @@ const resources = search.resources as CloudinaryResource[];
             ) : (
                 <video
                     controls loop disablepictureinpicture controlslist="nofullscreen nodownload noplaybackrate"
-                    preload="metadata"
+                    preload="none"
                     onclick="this.paused ? this.play() : this.pause()"
                     ontouchend="if (!isScrolling) { this.paused ? this.play() : this.pause() }"
                     onmouseover="previewVideo(this)" onmouseout="resetVideo(this)"
@@ -537,4 +537,27 @@ const resources = search.resources as CloudinaryResource[];
         if (endX < startX) nextImage();
         else if (endX > startX) prevImage();
     });
+
+    var videos = document.getElementsByTagName("video");
+
+    var options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: [0, 1]
+    }
+
+    var observer = new IntersectionObserver(handleIntersect, options);
+
+    for (var i = 0; i < videos.length; i++) {
+        observer.observe(videos[i]);
+    }
+
+    function handleIntersect(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.preload = "metadata";
+                observer.unobserve(entry.target);
+            }
+        });
+    }
 </script>
