@@ -65,7 +65,7 @@ const resources = search.resources as CloudinaryResource[];
                     alt={`"Concert Photograph by Eric Dew${CloudinaryResource.context ? " of " + CloudinaryResource.context.alt : ""}`} />
             ) : (
                 <video
-                    controls loop disablepictureinpicture webkit-playsinline playsinline controlslist="nofullscreen nodownload noplaybackrate"
+                    controls loop disablepictureinpicture playsinline={true} webkit-playsinline playsinline controlslist="nofullscreen nodownload noplaybackrate"
                     preload={`${index <= 5 ? "metadata" : "none"}`}
                     onclick="this.paused ? this.play() : this.pause()"
                     ontouchend="if (!isScrolling) { this.paused ? this.play() : this.pause() }"
