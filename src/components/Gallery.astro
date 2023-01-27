@@ -39,20 +39,20 @@ const resources = search.resources as CloudinaryResource[];
     {resources.map((CloudinaryResource, index) => (
         <div
             data-position={`${index == 0 ? "first" : index + 1 == resources.length ? "last" : "middle"}`}
-            onclick="setFullscreen(this)"
-            ontouchstart="isScrolling=false" ontouchmove="isScrolling=true" ontouchend="if (!isScrolling) setFullscreen(this)"
+            onclick="setFullscreen(this, 'fadeIn')"
+            ontouchstart="isScrolling=false" ontouchmove="isScrolling=true" ontouchend="if (!isScrolling) setFullscreen(this, 'fadeIn')"
             class="cursor-zoom-in relative m-0.5" style={`flex-grow: ${CloudinaryResource.width * 300 / CloudinaryResource.height}; flex-basis: ${CloudinaryResource.width * 300 / CloudinaryResource.height}px;`}>
             
             <!-- placeholder for proper grid sizing -->
             <div class="block" style={`padding-bottom: ${CloudinaryResource.height / CloudinaryResource.width * 100}%`}></div>
 
-            <!-- loading icon only shown in fullscreen mode -->
-            <div role="status" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <Icon name="loading" class="inline w-20 h-20 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" />
-                <span class="sr-only">loading image...</span>
-            </div>
-
             {CloudinaryResource.resource_type == "image" ? (
+                // loading icon only shown in fullscreen mode
+                <div role="status" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <Icon name="loading" class="inline w-20 h-20 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" />
+                    <span class="sr-only">loading image...</span>
+                </div>
+
                 <Picture
                     src={CloudinaryResource.secure_url}
                     aspectRatio={CloudinaryResource.aspect_ratio}
@@ -60,7 +60,7 @@ const resources = search.resources as CloudinaryResource[];
                     draggable="false"
                     sizes="(min-width: 1150px) 50vw, (min-width: 900px) 75vw, 100vw" // various layout breakpoints
                     class="absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000"
-                    onload="this.style.opacity=1" // fade in image after loading
+                    onload="this.style.opacity=1; this.parentNode.previousElementSibling.style.display = 'none';" // fade in image after loading, remove loading icon
                     loading="lazy"
                     alt={`"Concert Photograph by Eric Dew${CloudinaryResource.context ? " of " + CloudinaryResource.context.alt : ""}`} />
             ) : (
@@ -107,13 +107,193 @@ const resources = search.resources as CloudinaryResource[];
         </div>
     </button>
 
-    <button type="button" onclick="escapeFullscreen()" class="hover:bg-slate-100/10 fixed rounded-full mt-2 ml-2 p-3">
+    <button type="button" onclick="escapeFullscreen(true)" class="hover:bg-slate-100/10 fixed rounded-full mt-2 ml-2 p-3">
         <Icon name="xmark-solid" class="w-6 h-6 fill-slate-100" />
         <span class="sr-only">exit image</span>
     </button>
 </div>
 
 <style>
+    @keyframes slideOutLeftImage {
+        from {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(-50%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes slideOutRightImage {
+        from {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(50%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes slideInLeftImage {
+        from {
+            transform: translateX(-50%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInRightImage {
+        from {
+            transform: translateX(50%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+    }
+
+    .slideOutLeftImage {
+        animation: slideOutLeftImage 150ms ease-in-out;
+    }
+
+    .slideOutRightImage {
+        animation: slideOutRightImage 150ms ease-in-out;
+    }
+
+    .slideInLeftImage {
+        animation: slideInLeftImage 100ms ease-in-out;
+    }
+
+    .slideInRightImage {
+        animation: slideInRightImage 100ms ease-in-out;
+    }
+
+    @keyframes slideOutLeftVideo {
+        from {
+            left: 50%;
+            opacity: 1;
+        }
+        to {
+            left: 25%;
+            opacity: 0;
+        }
+    }
+
+    @keyframes slideOutRightVideo {
+        from {
+            left: 50%;
+            opacity: 1;
+        }
+        to {
+            left: 75%;
+            opacity: 0;
+        }
+    }
+
+    @keyframes slideInLeftVideo {
+        from {
+            left: 25%;
+            opacity: 0;
+        }
+        to {
+            left: 50%;
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInRightVideo {
+        from {
+            left: 75%;
+            opacity: 0;
+        }
+        to {
+            left: 50%;
+            opacity: 1;
+        }
+    }
+
+    .slideOutLeftVideo {
+        animation: slideOutLeftVideo 150ms ease-in-out;
+    }
+
+    .slideOutRightVideo {
+        animation: slideOutRightVideo 150ms ease-in-out;
+    }
+
+    .slideInLeftVideo {
+        animation: slideInLeftVideo 100ms ease-in-out;
+    }
+
+    .slideInRightVideo {
+        animation: slideInRightVideo 100ms ease-in-out;
+    }
+
+    @keyframes fadeInImage {
+        from {
+            scale: 0.75;
+            opacity: 0;
+        }
+        to {
+            scale: 1;
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOutImage {
+        from {
+            scale: 1;
+            opacity: 1;
+        }
+        to {
+            scale: 0.75;
+            opacity: 0;
+        }
+    }
+
+    @keyframes fadeInVideo {
+        from {
+            scale: 0.75;
+            opacity: 0;
+        }
+        to {
+            scale: 1;
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOutVideo {
+        from {
+            scale: 1;
+            opacity: 1;
+        }
+        to {
+            scale: 0.75;
+            opacity: 0;
+        }
+    }
+
+    .fadeInImage {
+        animation: fadeInImage 100ms ease-in-out;
+    }
+
+    .fadeOutImage {
+        animation: fadeOutImage 150ms ease-in-out;
+    }
+
+    .fadeInVideo {
+        animation: fadeInVideo 100ms ease-in-out;
+    }
+
+    .fadeOutVideo {
+        animation: fadeOutVideo 150ms ease-in-out;
+    }
+
     #fullscreen {
         position: fixed;
         z-index: 1;
@@ -157,7 +337,9 @@ const resources = search.resources as CloudinaryResource[];
     // used in components to differentiate taps vs scrolling on mobile
     let isScrolling = false;
 
-    function setFullscreen(element) {
+    let isAnimating = false;
+
+    function setFullscreen(element, animation) {
         if (element.id == "fullscreen") {
             return;
         }
@@ -177,62 +359,131 @@ const resources = search.resources as CloudinaryResource[];
 
         // delay to prevent accidental fullscreen controls trigger on inital touch opening media
         setTimeout(function() { document.getElementById("fullscreen-controls").classList.remove("hidden") }, 1);
+
+        if (animation) {
+            element.querySelector("img")?.classList.add(animation + "Image");
+            element.querySelector("video")?.classList.add(animation + "Video");
+
+            isAnimating = true;
+
+            setTimeout(function(){
+                element.querySelector("img")?.classList.remove(animation + "Image");
+                element.querySelector("video")?.classList.remove(animation + "Video");
+
+                isAnimating = false;
+            }, 100);
+        }
     }
 
     function getFullscreen() {
         return document.getElementById("fullscreen");
     }
 
-    function escapeFullscreen() {
+    function escapeFullscreen(animation) {
         const fullscreen = getFullscreen();
+        
+        isAnimating = false;
 
         if (fullscreen) {
-            fullscreen.removeAttribute("id");
-            fullscreen.querySelector("video")?.pause();
-            fullscreen.querySelector("video")?.blur();
-            document.body.classList.remove("overflow-hidden");
-            document.getElementById("fullscreen-controls").classList.add("hidden");
+            if (animation) {
+                fullscreen.querySelector("img")?.classList.add("fadeOutImage");
+                fullscreen.querySelector("video")?.classList.add("fadeOutVideo");
+
+                fullscreen.querySelector("video")?.pause();
+                fullscreen.querySelector("video")?.blur();
+                document.getElementById("fullscreen-controls").classList.add("hidden");
+
+                isAnimating = true;
+
+                setTimeout(function(){
+                    fullscreen.removeAttribute("id");
+                    document.body.classList.remove("overflow-hidden");
+
+                    fullscreen.querySelector("img")?.classList.remove("fadeOutImage");
+                    fullscreen.querySelector("video")?.classList.remove("fadeOutVideo");
+
+                    isAnimating = false;
+                }, 150);
+            } else {
+                fullscreen.removeAttribute("id");
+                fullscreen.querySelector("video")?.pause();
+                fullscreen.querySelector("video")?.blur();
+                document.body.classList.remove("overflow-hidden");
+                document.getElementById("fullscreen-controls").classList.add("hidden");
+            }
         }
     }
 
     function nextImage() {
+        if (isAnimating) return;
+
         const fullscreen = getFullscreen();
 
         if (fullscreen) {
-            escapeFullscreen();
-            setFullscreen(
-                fullscreen.dataset.position == "last"
-                ? document.querySelector("[data-position='first']")
-                : fullscreen.nextSibling
-            );
+            fullscreen.querySelector("img")?.classList.add("slideOutLeftImage");
+            fullscreen.querySelector("video")?.pause();
+            fullscreen.querySelector("video")?.classList.add("slideOutLeftVideo");
+
+            isAnimating = true;
+
+            setTimeout(function(){
+                fullscreen.querySelector("img")?.classList.remove("slideOutLeftImage");
+                fullscreen.querySelector("video")?.classList.remove("slideOutLeftVideo");
+
+                isAnimating = false;
+
+                escapeFullscreen(false);
+                setFullscreen(
+                    fullscreen.dataset.position == "last"
+                    ? document.querySelector("[data-position='first']")
+                    : fullscreen.nextSibling,
+                    "slideInRight"
+                );
+            }, 150);
         }
     }
 
     function prevImage() {
+        if (isAnimating) return;
+
         const fullscreen = getFullscreen();
 
         if (fullscreen) {
-            escapeFullscreen();
-            setFullscreen(
-                fullscreen.dataset.position == "first"
-                ? document.querySelector("[data-position='last']")
-                : fullscreen.previousSibling
-            );
+            fullscreen.querySelector("img")?.classList.add("slideOutRightImage");
+            fullscreen.querySelector("video")?.pause();
+            fullscreen.querySelector("video")?.classList.add("slideOutRightVideo");
+
+            isAnimating = true;
+
+            setTimeout(function(){
+                fullscreen.querySelector("img")?.classList.remove("slideOutRightImage");
+                fullscreen.querySelector("video")?.classList.remove("slideOutRightVideo");
+
+                isAnimating = false;
+
+                escapeFullscreen(false);
+                setFullscreen(
+                    fullscreen.dataset.position == "first"
+                    ? document.querySelector("[data-position='last']")
+                    : fullscreen.previousSibling,
+                    "slideInLeft"
+                );
+            }, 150);
         }
     }
     
     document.onkeydown = function(event) {
         const fullscreen = getFullscreen();
 
-        if (!fullscreen) {
+        if (!fullscreen || isAnimating) {
             return;
         }
 
         if (event.key == "Escape") {
-            escapeFullscreen();
-        } else if (event.key == "ArrowLeft") {
+            escapeFullscreen(true);
+        } else if (event.key == "ArrowLeft" || event.key == "ArrowUp") {
             prevImage();
-        } else if (event.key == "ArrowRight") {
+        } else if (event.key == "ArrowRight" || event.key == "ArrowDown") {
             nextImage();
         }
     }
@@ -269,7 +520,7 @@ const resources = search.resources as CloudinaryResource[];
 
         const fullscreen = getFullscreen();
 
-        if (!fullscreen) {
+        if (!fullscreen || isAnimating) {
             return;
         }
 
