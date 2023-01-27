@@ -40,7 +40,7 @@ const resources = search.resources as CloudinaryResource[];
         <div
             data-position={`${index == 0 ? "first" : index + 1 == resources.length ? "last" : "middle"}`}
             onclick="setFullscreen(this, 'fadeIn')"
-            ontouchstart="isScrolling=false" ontouchmove="isScrolling=true" ontouchend="if (!isScrolling) setFullscreen(this, 'fadeIn')"
+            ontouchend="if (!isScrolling) setFullscreen(this, 'fadeIn')"
             class="cursor-zoom-in relative m-0.5" style={`flex-grow: ${CloudinaryResource.width * 300 / CloudinaryResource.height}; flex-basis: ${CloudinaryResource.width * 300 / CloudinaryResource.height}px;`}>
             
             <!-- placeholder for proper grid sizing -->
@@ -245,17 +245,6 @@ const resources = search.resources as CloudinaryResource[];
         }
     }
 
-    @keyframes fadeOutImage {
-        from {
-            scale: 1;
-            opacity: 1;
-        }
-        to {
-            scale: 0.75;
-            opacity: 0;
-        }
-    }
-
     @keyframes fadeInVideo {
         from {
             scale: 0.75;
@@ -267,31 +256,12 @@ const resources = search.resources as CloudinaryResource[];
         }
     }
 
-    @keyframes fadeOutVideo {
-        from {
-            scale: 1;
-            opacity: 1;
-        }
-        to {
-            scale: 0.75;
-            opacity: 0;
-        }
-    }
-
     .fadeInImage {
         animation: fadeInImage 100ms ease-in-out;
     }
 
-    .fadeOutImage {
-        animation: fadeOutImage 150ms ease-in-out;
-    }
-
     .fadeInVideo {
         animation: fadeInVideo 100ms ease-in-out;
-    }
-
-    .fadeOutVideo {
-        animation: fadeOutVideo 150ms ease-in-out;
     }
 
     #fullscreen {
@@ -385,32 +355,11 @@ const resources = search.resources as CloudinaryResource[];
         isAnimating = false;
 
         if (fullscreen) {
-            if (animation) {
-                fullscreen.querySelector("img")?.classList.add("fadeOutImage");
-                fullscreen.querySelector("video")?.classList.add("fadeOutVideo");
-
-                fullscreen.querySelector("video")?.pause();
-                fullscreen.querySelector("video")?.blur();
-                document.getElementById("fullscreen-controls").classList.add("hidden");
-
-                isAnimating = true;
-
-                setTimeout(function(){
-                    fullscreen.removeAttribute("id");
-                    document.body.classList.remove("overflow-hidden");
-
-                    fullscreen.querySelector("img")?.classList.remove("fadeOutImage");
-                    fullscreen.querySelector("video")?.classList.remove("fadeOutVideo");
-
-                    isAnimating = false;
-                }, 150);
-            } else {
-                fullscreen.removeAttribute("id");
-                fullscreen.querySelector("video")?.pause();
-                fullscreen.querySelector("video")?.blur();
-                document.body.classList.remove("overflow-hidden");
-                document.getElementById("fullscreen-controls").classList.add("hidden");
-            }
+            fullscreen.removeAttribute("id");
+            fullscreen.querySelector("video")?.pause();
+            fullscreen.querySelector("video")?.blur();
+            document.body.classList.remove("overflow-hidden");
+            document.getElementById("fullscreen-controls").classList.add("hidden");
         }
     }
 
@@ -510,9 +459,14 @@ const resources = search.resources as CloudinaryResource[];
     let endY;
 
     document.addEventListener('touchstart', e => {
+        isScrolling = false;
         startX = e.changedTouches[0].screenX
         startY = e.changedTouches[0].screenY
-    });
+    }, {passive: true});
+
+    document.addEventListener('touchmove', e => {
+        isScrolling = true;
+    }, {passive: true});
 
     document.addEventListener('touchend', e => {
         endX = e.changedTouches[0].screenX
