@@ -78,7 +78,7 @@ const resources = search.resources as CloudinaryResource[];
                 </video>
 
                 <div class="video-duration font-mono absolute top-0 flex items-center bg-gradient-to-b from-black/50 to-transparent w-full justify-end">
-                    <span class="text-xs">{new Date(resources[0].duration * 1000).toISOString().slice(15, 19)}</span>
+                    <span class="text-xs">{new Date(CloudinaryResource.duration * 1000).toISOString().slice(15, 19)}</span>
                     <Icon name="circle-play-regular" class="fill-slate-100 h-6 m-2" />
                 </div>
             )}
@@ -381,7 +381,7 @@ const resources = search.resources as CloudinaryResource[];
 
     function escapeFullscreen(animation) {
         const fullscreen = getFullscreen();
-        
+
         isAnimating = false;
 
         if (fullscreen) {
