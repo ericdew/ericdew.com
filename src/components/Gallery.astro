@@ -492,26 +492,21 @@ const resources = search.resources as CloudinaryResource[];
         else if (endX > startX) prevImage();
     });
 
-    var videos = document.getElementsByTagName("video");
+    const videos = document.getElementsByTagName("video");
 
-    var options = {
-      root: null,
-      rootMargin: "0px",
-      threshold: [0, 1]
-    }
+    window.addEventListener("scroll", function() {
+        Array.from(videos).forEach(video => {
+            const rect = video.getBoundingClientRect();
+            const isInViewport = (
+                rect.top >= 0 && 
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) ||
+                rect.bottom >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+            );
 
-    var observer = new IntersectionObserver(handleIntersect, options);
-
-    for (var i = 0; i < videos.length; i++) {
-        observer.observe(videos[i]);
-    }
-
-    function handleIntersect(entries, observer) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.preload = "metadata";
-                observer.unobserve(entry.target);
+            if (isInViewport) {
+                video.preload = "metadata";
             }
         });
-    }
+    });
 </script>
