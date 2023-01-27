@@ -61,12 +61,12 @@ const resources = search.resources as CloudinaryResource[];
                     sizes="(min-width: 1150px) 50vw, (min-width: 900px) 75vw, 100vw" // various layout breakpoints
                     class="absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000"
                     onload="this.style.opacity=1; this.parentNode.previousElementSibling.style.display = 'none';" // fade in image after loading, remove loading icon
-                    loading="lazy"
+                    loading={`${index <= 5 ? "eager" : "lazy"}`}
                     alt={`"Concert Photograph by Eric Dew${CloudinaryResource.context ? " of " + CloudinaryResource.context.alt : ""}`} />
             ) : (
                 <video
-                    controls loop disablepictureinpicture controlslist="nofullscreen nodownload noplaybackrate"
-                    preload="none"
+                    controls loop disablepictureinpicture playsinline controlslist="nofullscreen nodownload noplaybackrate"
+                    preload={`${index <= 5 ? "metadata" : "none"}`}
                     onclick="this.paused ? this.play() : this.pause()"
                     ontouchend="if (!isScrolling) { this.paused ? this.play() : this.pause() }"
                     onmouseover="previewVideo(this)" onmouseout="resetVideo(this)"
@@ -303,7 +303,7 @@ const resources = search.resources as CloudinaryResource[];
     }
 </style>
 
-<script client:load>
+<script client:inline>
     // used in components to differentiate taps vs scrolling on mobile
     let isScrolling = false;
 
@@ -491,22 +491,6 @@ const resources = search.resources as CloudinaryResource[];
         if (endX < startX) nextImage();
         else if (endX > startX) prevImage();
     });
-
-    const videos = document.getElementsByTagName("video");
-
-    window.addEventListener("scroll", function() {
-        Array.from(videos).forEach(video => {
-            const rect = video.getBoundingClientRect();
-            const isInViewport = (
-                rect.top >= 0 && 
-                rect.top <= (window.innerHeight || document.documentElement.clientHeight) ||
-                rect.bottom >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-            );
-
-            if (isInViewport) {
-                video.preload = "metadata";
-            }
-        });
-    });
 </script>
+
+<script src="../scripts/lazy-load-videos.js"></script>
