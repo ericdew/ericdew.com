@@ -1,15 +1,36 @@
 ---
-import { Icon } from 'astro-icon';
+import { Icon } from "astro-icon";
 ---
 
 <div class="grid grid-flow-col gap-4 place-content-center my-4">
-    {[
-        ['envelope', 'hover:fill-[#EA4335] dark:hover:fill-[#EA4335]', 'mailto:me@ericdew.com', 'Send an email to Eric Dew'],
-        ['instagram', 'hover:fill-[#C13584] dark:hover:fill-[#C13584]', 'https://www.instagram.com/ericdew/', 'Follow Eric Dew on Instagram'],
-        ['twitter', 'hover:fill-[#1DA1F2] dark:hover:fill-[#1DA1F2]', 'https://twitter.com/ericdew', 'Follow Eric Dew on Twitter'],
+  {
+    [
+      [
+        "envelope",
+        "hover:fill-[#EA4335] dark:hover:fill-[#EA4335]",
+        "mailto:me@ericdew.com",
+        "Send an email to Eric Dew"
+      ],
+      [
+        "instagram",
+        "hover:fill-[#C13584] dark:hover:fill-[#C13584]",
+        "https://www.instagram.com/ericdew/",
+        "Follow Eric Dew on Instagram"
+      ],
+      [
+        "twitter",
+        "hover:fill-[#1DA1F2] dark:hover:fill-[#1DA1F2]",
+        "https://twitter.com/ericdew",
+        "Follow Eric Dew on Twitter"
+      ]
     ].map(([icon, color, url, description]) => (
-        <a href={url} class={`w-8 fill-neutral-900 dark:fill-slate-100 ${color}`} aria-label={description}>
-            <Icon name={icon} class="transition ease-in-out duration-300" />
-        </a>
-    ))}
+      <a
+        href={url}
+        class={`w-8 fill-neutral-900 dark:fill-slate-100 ${color}`}
+        aria-label={description}
+      >
+        <Icon name={icon} class="transition ease-in-out duration-300" />
+      </a>
+    ))
+  }
 </div>

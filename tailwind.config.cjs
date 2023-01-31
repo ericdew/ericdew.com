@@ -1,16 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
-	darkMode: 'class',
-	theme: {
-		extend: {
-			fontFamily: {
-				'sans': ['Catamaran', ...defaultTheme.fontFamily.sans],
-			},
-		}
-	},
-	plugins: [],
-}
+  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+  darkMode: "class",
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ["Catamaran", ...defaultTheme.fontFamily.sans],
+      },
+    },
+  },
+  plugins: [],
+};
