@@ -41,7 +41,7 @@ const resources = search.resources as CloudinaryResource[];
       data-position={`${index == 0 ? "first" : index + 1 == resources.length ? "last" : "middle"}`}
       onclick="setFullscreen(this, 'fadeIn')"
       ontouchend="if (!isScrolling) setFullscreen(this, 'fadeIn')"
-      class="cursor-zoom-in relative m-0.5"
+      class="relative m-0.5 cursor-zoom-in"
       style={`flex-grow: ${CloudinaryResource.width * 300 / CloudinaryResource.height}; flex-basis: ${CloudinaryResource.width * 300 / CloudinaryResource.height}px;`}
     >
 
@@ -50,7 +50,7 @@ const resources = search.resources as CloudinaryResource[];
 
       {CloudinaryResource.resource_type == "image" ? (
         // loading icon only shown in fullscreen mode
-        <div role="status" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div role="status" class="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2">
           <Icon name="loading" class="inline w-20 h-20 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" />
           <span class="sr-only">loading image...</span>
         </div>
@@ -75,7 +75,7 @@ const resources = search.resources as CloudinaryResource[];
           onmouseover="previewVideo(this)"
           onmouseout="resetVideo(this)"
           poster-src={CloudinaryResource.secure_url.replace(".mp4", ".jpg")}
-          class="absolute align-bottom top-0 w-full h-full object-cover"
+          class="absolute top-0 h-full w-full object-cover align-bottom"
         >
 
           <source src={CloudinaryResource.secure_url} type="video/mp4" />
@@ -83,7 +83,7 @@ const resources = search.resources as CloudinaryResource[];
 
         </video>
 
-          <div class="video-duration font-mono absolute top-0 flex items-center bg-gradient-to-b from-black/50 to-transparent w-full justify-end">
+          <div class="video-duration absolute top-0 flex w-full items-center justify-end bg-gradient-to-b from-black/50 to-transparent font-mono">
             <div class="text-xs">
               <span id={`current-time-video-${index}`} class="current-time hidden">0:00 / </span>
               <span>{new Date(CloudinaryResource.duration * 1000).toISOString().slice(15, 19)}</span>
@@ -96,27 +96,27 @@ const resources = search.resources as CloudinaryResource[];
 
   <!-- placeholders required to properly size images in the last/incomplete row -->
   {Array.from({length: 10}, () => (
-    <div class="grow-[100] basis-[240px] h-0 m-0"></div>
+    <div class="m-0 h-0 grow-[100] basis-[240px]"></div>
   ))}
 
 </div>
 
-<div id="fullscreen-controls" class="z-[1] fixed top-0 hidden">
-  <button type="button" onclick="prevImage()" class="h-[50vh] mt-[25vh] flex items-center fixed left-0 w-[15vw] md:w-[25vw] opacity-0 hover:opacity-100">
-    <div class="absolute left-0 ml-4 md:ml-8 p-2 md:p-4 bg-neutral-700 rounded-full">
+<div id="fullscreen-controls" class="fixed top-0 z-[1] hidden">
+  <button type="button" onclick="prevImage()" class="fixed left-0 mt-[25vh] flex h-[50vh] w-[15vw] items-center opacity-0 hover:opacity-100 md:w-[25vw]">
+    <div class="absolute left-0 ml-4 rounded-full bg-neutral-700 p-2 md:ml-8 md:p-4">
       <Icon name="chevron-left-solid" class="w-4 md:w-6 h-4 md:h-6 fill-slate-100" />
       <span class="sr-only">previous image</span>
     </div>
   </button>
 
-  <button type="button" onclick="nextImage()" class="h-[50vh] mt-[25vh] flex items-center fixed right-0 w-[15vw] md:w-[25vw] opacity-0 hover:opacity-100">
-    <div class="absolute right-0 mr-4 md:mr-8 p-2 md:p-4 bg-neutral-700 rounded-full">
+  <button type="button" onclick="nextImage()" class="fixed right-0 mt-[25vh] flex h-[50vh] w-[15vw] items-center opacity-0 hover:opacity-100 md:w-[25vw]">
+    <div class="absolute right-0 mr-4 rounded-full bg-neutral-700 p-2 md:mr-8 md:p-4">
       <Icon name="chevron-right-solid" class="w-4 md:w-6 h-4 md:h-6 fill-slate-100" />
       <span class="sr-only">next image</span>
     </div>
   </button>
 
-  <button type="button" onclick="escapeFullscreen(true)" class="hover:bg-slate-100/10 fixed rounded-full mt-2 ml-2 p-3">
+  <button type="button" onclick="escapeFullscreen(true)" class="fixed mt-2 ml-2 rounded-full p-3 hover:bg-slate-100/10">
     <Icon name="xmark-solid" class="w-6 h-6 fill-slate-100" />
     <span class="sr-only">exit image</span>
   </button>
