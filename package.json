@@ -18,5 +18,12 @@
     "cloudinary": "^1.33.0",
     "sharp": "^0.31.3",
     "tailwindcss": "^3.2.4"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.3",
+    "prettier-plugin-tailwindcss": "^0.2.2"
+  },
+  "prettier": {
+    "printWidth": 140
   }
 }
