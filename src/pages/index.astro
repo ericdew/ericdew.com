@@ -3,15 +3,20 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Gallery from "../components/Gallery.astro";
 import Footer from "../components/Footer.astro";
+import Grain from "../components/ui/Grain.astro";
 ---
 
 <Layout
   title="Eric Dew — Concert Photographer & Videographer"
   description="Eric Dew (@ericdew) is a touring concert photographer and videographer based in San Francisco, CA."
 >
-  <main>
+
+  <Grain />
+
+  <main>  
     <Header />
     <Gallery folder="showcase" />
     <Footer />
   </main>
+
 </Layout>
