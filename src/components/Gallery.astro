@@ -173,6 +173,8 @@ const resources = search.resources as CloudinaryResource[];
     }
     
     fullscreen.removeAttribute("id");
+
+    document.getElementById("fullscreen-controls").querySelectorAll("button").forEach((button) => button.blur());
   }
 
   function slideTo(element, animationOut, animationIn) {
