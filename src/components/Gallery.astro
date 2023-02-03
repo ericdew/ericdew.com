@@ -28,7 +28,7 @@ const search = await cloudinary.search
   .expression(`folder:${Astro.props.folder}`)
   .with_field("context")
   .sort_by("filename", "asc")
-  .max_results(500)
+  .max_results(import.meta.env.DEV ? 5 : 500)
   .execute();
 
 const resources = search.resources as CloudinaryResource[];
@@ -39,9 +39,9 @@ const resources = search.resources as CloudinaryResource[];
   {resources.map((CloudinaryResource, index) => (
     <div
       data-position={`${index == 0 ? "first" : index + 1 == resources.length ? "last" : "middle"}`}
-      onclick="setFullscreen(this, 'fadeIn')"
-      ontouchend="if (!isScrolling) setFullscreen(this, 'fadeIn')"
-      class="relative m-0.5 cursor-zoom-in"
+      onclick="setFullscreen(this)"
+      ontouchend="if (!isScrolling) setFullscreen(this)"
+      class="relative m-0.5 cursor-zoom-in fullscreen:cursor-auto"
       style={`flex-grow: ${CloudinaryResource.width * 300 / CloudinaryResource.height}; flex-basis: ${CloudinaryResource.width * 300 / CloudinaryResource.height}px;`}
     >
 
@@ -50,7 +50,7 @@ const resources = search.resources as CloudinaryResource[];
 
       {CloudinaryResource.resource_type == "image" ? (
         // loading icon only shown in fullscreen mode
-        <div role="status" class="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2">
+        <div role="status" class="fullscreen:block fullscreen:fixed z-[2] absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2">
           <Icon name="loading" class="inline w-20 h-20 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" />
           <span class="sr-only">loading image...</span>
         </div>
@@ -61,34 +61,36 @@ const resources = search.resources as CloudinaryResource[];
           widths={[2000, 1200, 800]}
           draggable="false"
           sizes="(min-width: 1150px) 50vw, (min-width: 900px) 75vw, 100vw" // various layout breakpoints
-          class="absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000"
+          class="resource absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000 fullscreen:pointer-events-none"
           onload="this.style.opacity=1; this.parentNode.previousElementSibling.style.display = 'none';" // fade in image after loading, remove loading icon
           loading={`${index <= 5 ? "eager" : "lazy"}`}
           alt={`"Concert Photograph by Eric Dew${CloudinaryResource.context ? " of " + CloudinaryResource.context.alt : ""}`}
         />
       ) : (
-        <video
-          id={`video-${index}`}
-          loop webkit-playsinline playsinline
-          preload="none"
-          onclick="this.paused ? this.play() : this.pause()"
-          onmouseover="previewVideo(this)"
-          onmouseout="resetVideo(this)"
-          poster-src={CloudinaryResource.secure_url.replace(".mp4", ".jpg")}
-          class="absolute top-0 h-full w-full object-cover align-bottom"
-        >
+        <div>
+          <video
+            id={`video-${index}`}
+            loop webkit-playsinline playsinline
+            preload="none"
+            onclick="this.paused ? this.play() : this.pause()"
+            onmouseover="previewVideo(this)"
+            onmouseout="resetVideo(this)"
+            poster-src={CloudinaryResource.secure_url.replace(".mp4", ".jpg")}
+            class="resource absolute top-0 h-full w-full object-cover align-bottom pointer-events-none fullscreen:pointer-events-auto"
+          >
 
-          <source src={CloudinaryResource.secure_url} type="video/mp4" />
-          Your browser does not support HTML video.
+            <source src={CloudinaryResource.secure_url} type="video/mp4" />
+            Your browser does not support HTML video.
 
-        </video>
+          </video>
+        </div>
 
-          <div class="video-duration absolute top-0 flex w-full items-center justify-end bg-gradient-to-b from-black/50 to-transparent font-mono">
+          <div class="video-duration pointer-events-none fullscreen:pr-6 fullscreen:pt-6 fullscreen:z-[2] fullscreen:right-0 fullscreen:fixed absolute top-0 flex w-full items-center justify-end bg-gradient-to-b from-black/50 to-transparent font-mono">
             <div class="text-xs">
-              <span id={`current-time-video-${index}`} class="current-time hidden">0:00 / </span>
+              <span id={`current-time-video-${index}`} class="current-time hidden fullscreen:inline-flex">0:00 / </span>
               <span>{new Date(CloudinaryResource.duration * 1000).toISOString().slice(15, 19)}</span>
             </div>
-            <Icon name="circle-play-regular" class="fill-slate-100 h-6 m-2" />
+            <Icon name="circle-play-regular" class="fill-slate-100 h-6 m-2 fullscreen:hidden" />
           </div>
       )}
     </div>
@@ -101,7 +103,9 @@ const resources = search.resources as CloudinaryResource[];
 
 </div>
 
-<div id="fullscreen-controls" class="fixed top-0 z-[1] hidden">
+<div id="fullscreen-backdrop" class="fixed inset-0 z-[1] w-screen h-screen bg-black pointer-events-none opacity-0 transition-opacity duration-200"></div>
+
+<div id="fullscreen-controls" class="fixed top-0 z-[3] w-screen h-screen pointer-events-none opacity-0 transition-opacity duration-200">
   <button type="button" onclick="prevImage()" class="fixed left-0 mt-[25vh] flex h-[50vh] w-[15vw] items-center opacity-0 hover:opacity-100 md:w-[25vw]">
     <div class="absolute left-0 ml-4 rounded-full bg-neutral-700 p-2 md:ml-8 md:p-4">
       <Icon name="chevron-left-solid" class="w-4 md:w-6 h-4 md:h-6 fill-slate-100" />
@@ -122,325 +126,108 @@ const resources = search.resources as CloudinaryResource[];
   </button>
 </div>
 
-<style>
-  @keyframes slideOutLeftImage {
-    from {
-      transform: translateX(0%);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(-50%);
-      opacity: 0;
-    }
-  }
-
-  @keyframes slideOutRightImage {
-    from {
-      transform: translateX(0%);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(50%);
-      opacity: 0;
-    }
-  }
-
-  @keyframes slideInLeftImage {
-    from {
-      transform: translateX(-50%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0%);
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideInRightImage {
-    from {
-      transform: translateX(50%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0%);
-      opacity: 1;
-    }
-  }
-
-  .slideOutLeftImage {
-    animation: slideOutLeftImage 150ms ease-in-out;
-  }
-
-  .slideOutRightImage {
-    animation: slideOutRightImage 150ms ease-in-out;
-  }
-
-  .slideInLeftImage {
-    animation: slideInLeftImage 100ms ease-in-out;
-  }
-
-  .slideInRightImage {
-    animation: slideInRightImage 100ms ease-in-out;
-  }
-
-  @keyframes slideOutLeftVideo {
-    from {
-      left: 50%;
-      opacity: 1;
-    }
-    to {
-      left: 25%;
-      opacity: 0;
-    }
-  }
-
-  @keyframes slideOutRightVideo {
-    from {
-      left: 50%;
-      opacity: 1;
-    }
-    to {
-      left: 75%;
-      opacity: 0;
-    }
-  }
-
-  @keyframes slideInLeftVideo {
-    from {
-      left: 25%;
-      opacity: 0;
-    }
-    to {
-      left: 50%;
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideInRightVideo {
-    from {
-      left: 75%;
-      opacity: 0;
-    }
-    to {
-      left: 50%;
-      opacity: 1;
-    }
-  }
-
-  .slideOutLeftVideo {
-    animation: slideOutLeftVideo 150ms ease-in-out;
-  }
-
-  .slideOutRightVideo {
-    animation: slideOutRightVideo 150ms ease-in-out;
-  }
-
-  .slideInLeftVideo {
-    animation: slideInLeftVideo 100ms ease-in-out;
-  }
-
-  .slideInRightVideo {
-    animation: slideInRightVideo 100ms ease-in-out;
-  }
-
-  @keyframes fadeInImage {
-    from {
-      scale: 0.75;
-      opacity: 0;
-    }
-    to {
-      scale: 1;
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeInVideo {
-    from {
-      scale: 0.75;
-      opacity: 0;
-    }
-    to {
-      scale: 1;
-      opacity: 1;
-    }
-  }
-
-  .fadeInImage {
-    animation: fadeInImage 100ms ease-in-out;
-  }
-
-  .fadeInVideo {
-    animation: fadeInVideo 100ms ease-in-out;
-  }
-
-  #fullscreen {
-    position: fixed;
-    z-index: 1;
-    cursor: auto;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    background: black;
-    margin: 0;
-  }
-
-  #fullscreen img {
-    object-fit: contain;
-  }
-
-  #fullscreen video {
-    height: 100vh;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: auto;
-  }
-
-  #fullscreen div[role="status"] {
-    display: block;
-  }
-
-  #fullscreen .video-duration {
-    padding-right: 1.5rem;
-    padding-top: 1.5rem;
-  }
-
-  #fullscreen .current-time {
-    display: inline-flex;
-  }
-
-  #fullscreen .video-duration svg {
-    display: none;
-  }
-</style>
-
 <script client:inline>
-  // used in components to differentiate taps vs scrolling on mobile
-  let isScrolling = false;
-
   let isAnimating = false;
 
   function setFullscreen(element, animation) {
+    // ignore clicks when already fullscreen
     if (element.id == "fullscreen") {
       return;
     }
 
-    element.scrollIntoView({ block: "center" });
+    disableScrolling();
+    enableFullscreenControls();
     element.id = "fullscreen";
 
-    const video = element.querySelector("video");
-
-    if (video) {
-      video.focus();
-      if (video.paused) setTimeout(() => { video.play(); }, 1);
-      video.muted = false;
-    }
-
-    document.body.classList.add("overflow-hidden");
-
-    // delay to prevent accidental fullscreen controls trigger on inital touch opening media
-    setTimeout(function () {
-      document.getElementById("fullscreen-controls").classList.remove("hidden");
-    }, 1);
-
+    const resource = element.querySelector(".resource");
+    
     if (animation) {
-      element.querySelector("img")?.classList.add(animation + "Image");
-      element.querySelector("video")?.classList.add(animation + "Video");
-
       isAnimating = true;
 
-      setTimeout(function () {
-        element.querySelector("img")?.classList.remove(animation + "Image");
-        element.querySelector("video")?.classList.remove(animation + "Video");
+      resource.classList.add(animation);
+      fullscreenResource(resource)
 
+      setTimeout(() => {
+        playFullscreenVideo();
+        resource.classList.remove(animation);
         isAnimating = false;
-      }, 100);
+      }, 200);
+    } else {
+      zoomIn(resource);
     }
   }
 
-  function getFullscreen() {
-    return document.getElementById("fullscreen");
+  function escapeFullscreen(close) {
+    const fullscreen = document.getElementById("fullscreen");
+
+    if (!fullscreen || isAnimating) return;
+
+    fullscreen.querySelector("video")?.pause();
+    fullscreen.querySelector("video")?.blur();
+
+    if (close) {
+      zoomOut(fullscreen.querySelector(".resource"));
+      disableFullscreenControls();
+    } else {
+      resetElement(fullscreen.querySelector(".resource"))
+    }
+    
+    fullscreen.removeAttribute("id");
   }
 
-  function escapeFullscreen(animation) {
-    const fullscreen = getFullscreen();
+  function slideTo(element, animationOut, animationIn) {
+    const fullscreen = document.getElementById("fullscreen");
 
-    isAnimating = false;
+    if (!fullscreen || isAnimating) return;
 
-    if (fullscreen) {
-      fullscreen.removeAttribute("id");
-      fullscreen.querySelector("video")?.pause();
-      fullscreen.querySelector("video")?.blur();
-      document.body.classList.remove("overflow-hidden");
-      document.getElementById("fullscreen-controls").classList.add("hidden");
-    }
-  }
+    const resource = fullscreen.querySelector(".resource");
+    resource.classList.add(animationOut);
+    fullscreen.querySelector("video")?.pause();
 
-  function nextImage() {
-    if (isAnimating) return;
+    isAnimating = true;
 
-    const fullscreen = getFullscreen();
+    setTimeout(() => {
+      resource.classList.remove(animationOut);
 
-    if (fullscreen) {
-      fullscreen.querySelector("img")?.classList.add("slideOutLeftImage");
-      fullscreen.querySelector("video")?.pause();
-      fullscreen.querySelector("video")?.classList.add("slideOutLeftVideo");
+      isAnimating = false;
 
-      isAnimating = true;
-
-      setTimeout(function () {
-        fullscreen.querySelector("img")?.classList.remove("slideOutLeftImage");
-        fullscreen.querySelector("video")?.classList.remove("slideOutLeftVideo");
-
-        isAnimating = false;
-
-        escapeFullscreen(false);
-        setFullscreen(
-          fullscreen.dataset.position == "last"
-            ? document.querySelector("[data-position='first']")
-            : fullscreen.nextSibling,
-          "slideInRight"
-        );
-      }, 150);
-    }
+      escapeFullscreen(false);
+      setFullscreen(element, animationIn);
+    }, 200);
   }
 
   function prevImage() {
-    if (isAnimating) return;
+    const fullscreen = document.getElementById("fullscreen");
 
-    const fullscreen = getFullscreen();
+    if (!fullscreen || isAnimating) return;
 
-    if (fullscreen) {
-      fullscreen.querySelector("img")?.classList.add("slideOutRightImage");
-      fullscreen.querySelector("video")?.pause();
-      fullscreen.querySelector("video")?.classList.add("slideOutRightVideo");
-
-      isAnimating = true;
-
-      setTimeout(function () {
-        fullscreen.querySelector("img")?.classList.remove("slideOutRightImage");
-        fullscreen.querySelector("video")?.classList.remove("slideOutRightVideo");
-
-        isAnimating = false;
-
-        escapeFullscreen(false);
-        setFullscreen(
-          fullscreen.dataset.position == "first"
-            ? document.querySelector("[data-position='last']")
-            : fullscreen.previousSibling,
-          "slideInLeft"
-        );
-      }, 150);
-    }
+    slideTo(
+      fullscreen.dataset.position == "first"
+        ? document.querySelector("[data-position='last']")
+        : fullscreen.previousSibling,
+      "animate-slide-out-right",
+      "animate-slide-in-left"
+    );
   }
 
-  document.onkeydown = function (event) {
-    const fullscreen = getFullscreen();
+  function nextImage() {
+    const fullscreen = document.getElementById("fullscreen");
 
-    if (!fullscreen || isAnimating) {
-      return;
-    }
+    if (!fullscreen || isAnimating) return;
+
+    slideTo(
+      fullscreen.dataset.position == "last"
+          ? document.querySelector("[data-position='first']")
+          : fullscreen.nextSibling,
+      "animate-slide-out-left",
+      "animate-slide-in-right"
+    );
+  }
+
+  document.onkeydown = (event) => {
+    const fullscreen = document.getElementById("fullscreen");
+
+    if (!fullscreen || isAnimating) return;
 
     if (event.key == "Escape") {
       escapeFullscreen(true);
@@ -451,22 +238,174 @@ const resources = search.resources as CloudinaryResource[];
     }
   };
 
+  function zoomIn(element) {
+    const rect = element.getBoundingClientRect();
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const resourceLeft = rect.left;
+    const resourceTop = rect.top;
+    const resourceHeight = rect.height;
+    const resourceWidth = rect.width;
+    const resourceAspectRatio = resourceHeight / resourceWidth;
+    const screenAspectRatio = screenHeight / screenWidth;
+    const isVertical = resourceAspectRatio > screenAspectRatio;
+
+    freezeElement(element);
+
+    // now transition the element to be fullscreen
+    element.getBoundingClientRect(); // required for animation to work
+
+    element.style.transition = "all 200ms ease-in-out";
+    element.style.width = isVertical ? "auto" : "100vw";
+    element.style.height = isVertical ? "100vh" : "auto";
+    
+    // align left + half screen width - (half final element width or half screen width)
+    element.style.marginLeft = -resourceLeft + (screenWidth / 2) - (Math.min((screenHeight / resourceHeight) * resourceWidth, screenWidth) / 2) + "px";
+    // align top + half screen height - (half final element height or half screen height)
+    element.style.marginTop = -resourceTop + (screenHeight / 2) - (Math.min((screenWidth / resourceWidth) * resourceHeight, screenHeight) / 2) + "px";
+    
+    // disable certain interactions while animating
+    isAnimating = true;
+
+    // set properties to allow dynamic scaling once animation is finished
+    setTimeout(() => {
+      element.style.removeProperty("transition");
+      element.style.removeProperty("top");
+      element.style.removeProperty("margin-top");
+      element.style.removeProperty("margin-left");
+
+      fullscreenResource(element);
+      playFullscreenVideo();
+
+      isAnimating = false;
+    }, 200);
+  }
+
+  function zoomOut(element) {
+    // disable certain interactions while animating
+    isAnimating = true;
+
+    // align screen with the resource being closed
+    enableScrolling();
+    element.parentElement.parentElement.scrollIntoView({ block: "center" });
+    disableScrolling();
+
+    freezeElement(element);
+
+    // resize the image back to the grid size
+    const rect = element.parentElement.parentElement.getBoundingClientRect();
+    element.style.transition = "all 200ms ease-in-out";
+    element.style.width = rect.width + "px";
+    element.style.height = rect.height + "px";
+    element.style.top = rect.top + "px";
+    element.style.left = rect.left + "px";
+
+    // reset properties to allow dynamic scaling once animation is finished
+    setTimeout(() => {
+      resetElement(element);
+      enableScrolling();
+      isAnimating = false;
+    }, 200);
+  }
+
+  // position the element fixed exactly where it is
+  // required in order to animate it
+  function freezeElement(element) {
+    const rect = element.getBoundingClientRect();
+    element.style.width = rect.width + "px";
+    element.style.height = rect.height + "px";
+    element.style.top = rect.top + "px";
+    element.style.position = "fixed";
+    element.style.zIndex = 2;
+  }
+
+  function fullscreenResource(element) {
+    element.style.width = "100vw"
+    element.style.height = "100vh"
+    element.style.objectFit = "contain"
+    element.style.inset = 0;
+    element.style.zIndex = 2;
+    element.style.position = "fixed";
+    element.scrollIntoView({ block: "center" });
+  }
+
+  function resetElement(element) {
+    element.style.removeProperty("transition");
+    element.style.removeProperty("width");
+    element.style.removeProperty("height");
+    element.style.removeProperty("top");
+    element.style.removeProperty("position");
+    element.style.removeProperty("z-index");
+    element.style.removeProperty("margin-left");
+    element.style.removeProperty("margin-top");
+    element.style.removeProperty("inset");
+    element.style.removeProperty("object-fit");
+  }
+
+  function disableScrolling() {
+    const bodyWidthBefore = document.body.clientWidth;
+    document.body.classList.add("overflow-hidden");
+
+    // if body width changes, add padding to account for the now hidden scrollbar
+    if (bodyWidthBefore < document.body.clientWidth) {
+      document.body.classList.add("mr-4");
+    }
+  }
+
+  function enableScrolling() {
+    document.body.classList.remove("overflow-hidden");
+    document.body.classList.remove("mr-4");
+  }
+
+  function enableFullscreenControls() {
+    const controls = document.getElementById("fullscreen-controls");
+    controls.style.pointerEvents = "auto";
+    controls.style.opacity = 1;
+
+    const backdrop = document.getElementById("fullscreen-backdrop");
+    backdrop.style.opacity = 1;
+  }
+
+  function disableFullscreenControls() {
+    const controls = document.getElementById("fullscreen-controls");
+    controls.style.pointerEvents = "none";
+    controls.style.opacity = 0;
+
+    const backdrop = document.getElementById("fullscreen-backdrop");
+    backdrop.style.opacity = 0;
+  }
+
   function previewVideo(video) {
-    if (!getFullscreen()) {
+    if (!document.getElementById("fullscreen")) {
       video.muted = true;
       video.play();
     }
   }
 
   function resetVideo(video) {
-    if (!getFullscreen()) {
+    if (!document.getElementById("fullscreen")) {
       video.muted = false;
       video.currentTime = 0;
       video.pause();
     }
   }
 
+  function playFullscreenVideo() {
+    const fullscreen = document.getElementById("fullscreen");
+
+    if (!fullscreen) return;
+
+    const video = fullscreen.querySelector("video");
+
+    if (!video) return;
+
+    video.focus();
+    video.play();
+    video.muted = false;
+  }
+
   const threshold = 50; // threshold value in pixels
+  let isScrolling = false;
   let startX;
   let endX;
   let startY;
@@ -486,7 +425,7 @@ const resources = search.resources as CloudinaryResource[];
     endX = e.changedTouches[0].screenX;
     endY = e.changedTouches[0].screenY;
 
-    const fullscreen = getFullscreen();
+    const fullscreen = document.getElementById("fullscreen");
 
     if (!fullscreen || isAnimating) {
       return;
@@ -499,7 +438,7 @@ const resources = search.resources as CloudinaryResource[];
 
     // vertical scrolling
     if (Math.abs(startY - endY) > threshold) {
-      escapeFullscreen();
+      escapeFullscreen(true);
       return;
     }
 
@@ -509,18 +448,18 @@ const resources = search.resources as CloudinaryResource[];
 </script>
 
 <!-- handle updating the current time of the video playing when fullscreen -->
-<script client:inline>
+<script>
   const videos = document.querySelectorAll("video");
-  const intervals = {};
+  const intervals: { [key: string]: any } = {};
 
-  videos.forEach(function (video) {
+  videos.forEach((video) => {
     const currentTimeSpan = document.getElementById(`current-time-${video.id}`);
 
     video.addEventListener("play", () => {
       intervals[video.id] = setInterval(() => {
         const minutes = Math.floor(video.currentTime / 60);
         const seconds = Math.floor(video.currentTime % 60);
-        currentTimeSpan.innerHTML = `${minutes}:${seconds.toString().padStart(2, "0")} / `;
+        currentTimeSpan!.innerHTML = `${minutes}:${seconds.toString().padStart(2, "0")} / `;
       }, 500);
     });
 
