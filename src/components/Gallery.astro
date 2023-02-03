@@ -139,6 +139,8 @@ const resources = search.resources as CloudinaryResource[];
     element.id = "fullscreen";
 
     const resource = element.querySelector(".resource");
+
+    if (resource.readyState <= 1) resource.load();
     
     if (animation) {
       isAnimating = true;
@@ -474,22 +476,6 @@ const resources = search.resources as CloudinaryResource[];
 
     video.addEventListener("pause", () => {
       clearInterval(intervals[video.id]);
-    });
-
-    video.addEventListener("canplay", () => {
-      const fullscreen = document.getElementById("fullscreen");
-
-      if (fullscreen && fullscreen.contains(video) && video.paused) {
-        video.play();
-      }
-    });
-
-    video.addEventListener("canplaythrough", () => {
-      const fullscreen = document.getElementById("fullscreen");
-
-      if (fullscreen && fullscreen.contains(video) && video.paused) {
-        video.play();
-      }
     });
   });
 </script>
