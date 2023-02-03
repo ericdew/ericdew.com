@@ -370,6 +370,7 @@ const resources = search.resources as CloudinaryResource[];
 
     const backdrop = document.getElementById("fullscreen-backdrop");
     backdrop.style.opacity = 1;
+    backdrop.style.pointerEvents = "auto";
   }
 
   function disableFullscreenControls() {
@@ -382,6 +383,7 @@ const resources = search.resources as CloudinaryResource[];
 
     const backdrop = document.getElementById("fullscreen-backdrop");
     backdrop.style.opacity = 0;
+    backdrop.style.pointerEvents = "none";
   }
 
   function previewVideo(video) {
