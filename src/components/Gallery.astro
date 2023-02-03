@@ -48,13 +48,12 @@ const resources = search.resources as CloudinaryResource[];
       <!-- placeholder for proper grid sizing -->
       <div class="block" style={`padding-bottom: ${CloudinaryResource.height / CloudinaryResource.width * 100}%`}></div>
 
-      {CloudinaryResource.resource_type == "image" ? (
-        // loading icon only shown in fullscreen mode
-        <div role="status" class="fullscreen:block fullscreen:fixed z-[2] absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2">
-          <Icon name="loading" class="inline w-20 h-20 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" />
-          <span class="sr-only">loading image...</span>
-        </div>
+      <div role="status" class="fullscreen:block fullscreen:fixed z-[2] absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2">
+        <Icon name="loading" class="inline w-20 h-20 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" />
+        <span class="sr-only">loading image...</span>
+      </div>
 
+      {CloudinaryResource.resource_type == "image" ? (
         <Picture
           src={CloudinaryResource.secure_url}
           aspectRatio={CloudinaryResource.aspect_ratio}
