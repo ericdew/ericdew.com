@@ -413,6 +413,10 @@ const resources = search.resources as CloudinaryResource[];
     video.focus();
     video.play();
     video.muted = false;
+
+    setTimeout(() => {
+      if (video.paused) playFullscreenVideo();
+    }, 100);
   }
 
   const threshold = 50; // threshold value in pixels
@@ -476,22 +480,6 @@ const resources = search.resources as CloudinaryResource[];
 
     video.addEventListener("pause", () => {
       clearInterval(intervals[video.id]);
-    });
-
-    video.addEventListener("canplay", () => {
-      const fullscreen = document.getElementById("fullscreen");
-
-      if (fullscreen && fullscreen.contains(video) && video.paused) {
-        video.play();
-      }
-    });
-
-    video.addEventListener("canplaythrough", () => {
-      const fullscreen = document.getElementById("fullscreen");
-
-      if (fullscreen && fullscreen.contains(video) && video.paused) {
-        video.play();
-      }
     });
   });
 </script>
