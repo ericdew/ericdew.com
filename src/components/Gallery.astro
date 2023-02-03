@@ -413,10 +413,6 @@ const resources = search.resources as CloudinaryResource[];
     video.focus();
     video.play();
     video.muted = false;
-
-    if (video.paused) {
-      video.dispatchEvent(new Event('touchstart'));
-    }
   }
 
   const threshold = 50; // threshold value in pixels
