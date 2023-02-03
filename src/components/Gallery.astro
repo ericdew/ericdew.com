@@ -479,7 +479,15 @@ const resources = search.resources as CloudinaryResource[];
     video.addEventListener("canplay", () => {
       const fullscreen = document.getElementById("fullscreen");
 
-      if (fullscreen && fullscreen.contains(video)) {
+      if (fullscreen && fullscreen.contains(video) && !video.paused) {
+        video.play();
+      }
+    });
+
+    video.addEventListener("canplaythrough", () => {
+      const fullscreen = document.getElementById("fullscreen");
+
+      if (fullscreen && fullscreen.contains(video) && !video.paused) {
         video.play();
       }
     });
