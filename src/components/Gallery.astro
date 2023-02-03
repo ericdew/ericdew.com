@@ -415,7 +415,8 @@ const resources = search.resources as CloudinaryResource[];
     video.muted = false;
 
     if (video.paused) {
-      video.dispatchEvent(new Event('click'));
+      video.dispatchEvent(new Event('touchstart'));
+      video.dispatchEvent(new Event('touchend'));
     }
   }
 
