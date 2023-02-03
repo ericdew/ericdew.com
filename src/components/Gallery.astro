@@ -70,7 +70,7 @@ const resources = search.resources as CloudinaryResource[];
           <video
             id={`video-${index}`}
             loop webkit-playsinline playsinline
-            preload="auto"
+            preload="none"
             onclick="this.paused ? this.play() : this.pause()"
             onmouseover="previewVideo(this)"
             onmouseout="resetVideo(this)"
