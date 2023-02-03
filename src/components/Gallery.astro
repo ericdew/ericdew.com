@@ -359,8 +359,11 @@ const resources = search.resources as CloudinaryResource[];
 
   function enableFullscreenControls() {
     const controls = document.getElementById("fullscreen-controls");
-    controls.style.pointerEvents = "auto";
     controls.style.opacity = 1;
+
+    controls.querySelectorAll("button").forEach((button) => {
+      button.style.pointerEvents = "auto";
+    });
 
     const backdrop = document.getElementById("fullscreen-backdrop");
     backdrop.style.opacity = 1;
@@ -368,8 +371,11 @@ const resources = search.resources as CloudinaryResource[];
 
   function disableFullscreenControls() {
     const controls = document.getElementById("fullscreen-controls");
-    controls.style.pointerEvents = "none";
     controls.style.opacity = 0;
+
+    controls.querySelectorAll("button").forEach((button) => {
+      button.style.pointerEvents = "none";
+    });
 
     const backdrop = document.getElementById("fullscreen-backdrop");
     backdrop.style.opacity = 0;
