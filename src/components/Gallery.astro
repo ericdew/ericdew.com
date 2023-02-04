@@ -74,6 +74,7 @@ const resources = search.resources as CloudinaryResource[];
             onclick="this.paused ? this.play() : this.pause()"
             onmouseover="previewVideo(this)"
             onmouseout="resetVideo(this)"
+            oncanplay="this.parentNode.previousElementSibling.style.display = 'none';" // remove loading icon
             poster-src={CloudinaryResource.secure_url.replace(".mp4", ".jpg")}
             class="resource absolute top-0 h-full w-full object-cover align-bottom pointer-events-none fullscreen:pointer-events-auto"
           >
