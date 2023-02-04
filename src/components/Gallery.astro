@@ -106,14 +106,14 @@ const resources = search.resources as CloudinaryResource[];
 <div id="fullscreen-backdrop" class="fixed scale-200 inset-0 z-[1] w-screen h-screen bg-black pointer-events-none opacity-0 transition-opacity duration-200"></div>
 
 <div id="fullscreen-controls" class="fixed top-0 z-[3] w-screen h-screen pointer-events-none opacity-0 transition-opacity duration-200">
-  <button type="button" onclick="prevImage()" class="fixed left-0 mt-[25vh] flex h-[50vh] w-[15vw] items-center opacity-0 hover:opacity-100 md:w-[25vw]">
+  <button type="button" onclick="prevResource()" class="fixed left-0 mt-[25vh] flex h-[50vh] w-[15vw] items-center opacity-0 hover:opacity-100 md:w-[25vw]">
     <div class="absolute left-0 ml-4 rounded-full bg-neutral-700 p-2 md:ml-8 md:p-4">
       <Icon name="chevron-left-solid" class="w-4 md:w-6 h-4 md:h-6 fill-slate-100" />
       <span class="sr-only">previous image</span>
     </div>
   </button>
 
-  <button type="button" onclick="nextImage()" class="fixed right-0 mt-[25vh] flex h-[50vh] w-[15vw] items-center opacity-0 hover:opacity-100 md:w-[25vw]">
+  <button type="button" onclick="nextResource()" class="fixed right-0 mt-[25vh] flex h-[50vh] w-[15vw] items-center opacity-0 hover:opacity-100 md:w-[25vw]">
     <div class="absolute right-0 mr-4 rounded-full bg-neutral-700 p-2 md:mr-8 md:p-4">
       <Icon name="chevron-right-solid" class="w-4 md:w-6 h-4 md:h-6 fill-slate-100" />
       <span class="sr-only">next image</span>
@@ -200,7 +200,7 @@ const resources = search.resources as CloudinaryResource[];
     }, 200);
   }
 
-  function prevImage() {
+  function prevResource() {
     const fullscreen = document.getElementById("fullscreen");
 
     if (!fullscreen || isAnimating) return;
@@ -214,7 +214,7 @@ const resources = search.resources as CloudinaryResource[];
     );
   }
 
-  function nextImage() {
+  function nextResource() {
     const fullscreen = document.getElementById("fullscreen");
 
     if (!fullscreen || isAnimating) return;
@@ -236,9 +236,9 @@ const resources = search.resources as CloudinaryResource[];
     if (event.key == "Escape") {
       escapeFullscreen(true);
     } else if (event.key == "ArrowLeft" || event.key == "ArrowUp") {
-      prevImage();
+      prevResource();
     } else if (event.key == "ArrowRight" || event.key == "ArrowDown") {
-      nextImage();
+      nextResource();
     }
   };
 
@@ -454,8 +454,8 @@ const resources = search.resources as CloudinaryResource[];
       return;
     }
 
-    if (endX < startX) nextImage();
-    else if (endX > startX) prevImage();
+    if (endX < startX) nextResource();
+    else if (endX > startX) prevResource();
   });
 </script>
 

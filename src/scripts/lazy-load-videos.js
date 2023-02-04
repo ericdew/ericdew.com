@@ -58,9 +58,31 @@ function mediaPlaybackRequiresUserGesture() {
 }
 
 function removeBehaviorsRestrictions() {
-  Array.from(document.getElementsByTagName("video")).forEach((video) => video.load());
+  const fullscreen = document.getElementById("fullscreen");
 
-  window.removeEventListener("keydown", removeBehaviorsRestrictions);
-  window.removeEventListener("mousedown", removeBehaviorsRestrictions);
-  window.removeEventListener("touchstart", removeBehaviorsRestrictions);
+  if (!fullscreen) return;
+
+  const prev = fullscreen.dataset.position == "first" ? document.querySelector("[data-position='last']") : fullscreen.previousSibling;
+  const next = fullscreen.dataset.position == "last" ? document.querySelector("[data-position='first']") : fullscreen.nextSibling;
+
+  const prevResource = prev.querySelector(".resource");
+  const nextReousrce = next.querySelector(".resource");
+
+  if (prevResource.tagName == "VIDEO" && prevResource.readyState != 4) prevResource.load();
+  if (nextReousrce.tagName == "VIDEO" && nextReousrce.readyState != 4) nextReousrce.load();
+
+  let allVideosLoaded = true;
+
+  Array.from(document.getElementsByTagName("video")).forEach((video) => {
+    if (video.readyState != 4) {
+      allVideosLoaded = false;
+      return;
+    }
+  });
+
+  if (allVideosLoaded) {
+    window.removeEventListener("keydown", removeBehaviorsRestrictions);
+    window.removeEventListener("mousedown", removeBehaviorsRestrictions);
+    window.removeEventListener("touchstart", removeBehaviorsRestrictions);
+  }
 }
