@@ -239,6 +239,9 @@ const resources = search.resources as CloudinaryResource[];
       prevResource();
     } else if (event.key == "ArrowRight" || event.key == "ArrowDown") {
       nextResource();
+    } else if (event.key === " ") {
+      const resource = fullscreen.querySelector(".resource");
+      if (resource.tagName == "VIDEO") resource.paused ? resource.play() : resource.pause();
     }
   };
 
