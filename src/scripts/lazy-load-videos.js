@@ -43,3 +43,24 @@ window.addEventListener("scroll", () => {
       if (!video.poster) video.poster = video.getAttribute("poster-src");
     });
 }, { passive: true });
+
+if (mediaPlaybackRequiresUserGesture()) {
+  window.addEventListener("keydown", removeBehaviorsRestrictions);
+  window.addEventListener("mousedown", removeBehaviorsRestrictions);
+  window.addEventListener("touchstart", removeBehaviorsRestrictions);
+}
+
+function mediaPlaybackRequiresUserGesture() {
+  // test if play() is ignored when not called from an input event handler
+  const video = document.createElement("video");
+  video.play();
+  return video.paused;
+}
+
+function removeBehaviorsRestrictions() {
+  Array.from(document.getElementsByTagName("video")).forEach((video) => video.load());
+
+  window.removeEventListener("keydown", removeBehaviorsRestrictions);
+  window.removeEventListener("mousedown", removeBehaviorsRestrictions);
+  window.removeEventListener("touchstart", removeBehaviorsRestrictions);
+}
