@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Catamaran", ...defaultTheme.fontFamily.sans],
+        sans: ["Open Sans", ...defaultTheme.fontFamily.sans],
       },
       keyframes: {
         grain: {
@@ -51,6 +51,7 @@ module.exports = {
     },
   },
   plugins: [
+    require('@tailwindcss/typography'),
     plugin(function ({ addVariant }) {
       addVariant("fullscreen", ["&#fullscreen", "#fullscreen &"]);
     }),
