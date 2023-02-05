@@ -10,6 +10,8 @@ export interface Props {
 
 const { title, description, hidden = false } = Astro.props;
 const share_image = "https://res.cloudinary.com/dwjfacaod/image/upload/v1673331417/public/share_vwcfsm.jpg";
+
+const prod = import.meta.env.PROD;
 ---
 
 <!DOCTYPE html>
@@ -55,11 +57,11 @@ const share_image = "https://res.cloudinary.com/dwjfacaod/image/upload/v16733314
     <meta name="twitter:image" content={share_image} />
     <meta name="twitter:image:alt" content="Concert photography portfolio by Eric Dew" />
     
-    <GTMHead />
+    {{prod} && <GTMHead />}
   </head>
 
   <body class="bg-slate-100 text-neutral-900 dark:bg-neutral-900 dark:text-slate-100">
-    <GTMBody />
+    {{prod} && <GTMBody />}
     <slot />
   </body>
 </html>
