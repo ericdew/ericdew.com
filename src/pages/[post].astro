@@ -1,6 +1,7 @@
 ---
 import { getCollection, CollectionEntry } from "astro:content";
-import BlogPost from "../layouts/BlogPost.astro";
+import Layout from "../layouts/Layout.astro";
+import Grain from "../components/ui/Grain.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => {
@@ -13,14 +14,50 @@ export async function getStaticPaths() {
   }));
 }
 
-interface Props {
+export interface Props {
   post: CollectionEntry<"blog">;
 }
 
 const { post } = Astro.props;
 const { Content } = await post.render();
+
+const WORDS_PER_MINUTE = 200;
+
+function getReadingTime(content: string) {
+  if (!content) return;
+  const clean = content.replace(/<\/?[^>]+(>|$)/g, "");
+  const numberOfWords = clean.split(/\s/g).length;
+  return Math.ceil(numberOfWords / WORDS_PER_MINUTE);
+}
 ---
 
-<BlogPost post={post}>
-  <Content />
-</BlogPost>
+<Layout title={post.data.title} description={post.data.description} hidden={post.data.draft}>
+  <Grain subtle={true} />
+
+  <article class="prose prose-neutral m-auto py-16 px-4 sm:px-0 prose-img:m-auto prose-video:m-auto prose-img:rounded-xl prose-video:rounded-xl dark:prose-invert md:prose-lg lg:prose-xl">
+    <div class="text-center">
+      <small>
+        <time datetime={post.data.published.toISOString()}>{post.data.published.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
+        •
+        {getReadingTime(post.body)} min read
+      </small>
+
+      <h1>{post.data.title}</h1>
+
+      {post.data.cover
+        ? <img src={post.data.cover} />
+        : <></>
+      }
+    </div>
+
+    <div class="[&>h2>a]:font-bold [&>h3>a]:font-semibold">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<script>
+  Array.from(document.getElementsByTagName("a"))
+    .filter((link) => link.hostname != window.location.hostname)
+    .forEach((link) => (link.target = "_blank"));
+</script>
