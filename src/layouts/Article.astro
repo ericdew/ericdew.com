@@ -1,6 +1,7 @@
 ---
 import Layout from "./Layout.astro";
 import type { CollectionEntry } from "astro:content";
+import Grain from "../components/ui/Grain.astro";
 
 export interface Props {
   article: CollectionEntry<"articles">;
@@ -19,17 +20,27 @@ function getReadingTime(content: string) {
 ---
 
 <Layout title={article.data.title} description={article.data.description} hidden={article.data.draft}>
-  <article class="prose prose-neutral m-auto py-16 prose-img:m-auto prose-video:m-auto prose-img:rounded-xl prose-video:rounded-xl dark:prose-invert md:prose-lg lg:prose-xl">
+  <Grain subtle={true} />
+
+  <article class="prose prose-neutral m-auto py-16 px-4 sm:px-0 prose-img:m-auto prose-video:m-auto prose-img:rounded-xl prose-video:rounded-xl dark:prose-invert md:prose-lg lg:prose-xl">
     <div class="text-center">
       <small>
-        <time datetime={article.data.publishedDate.toISOString()}>{article.data.publishedDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
+        <time datetime={article.data.published.toISOString()}>{article.data.published.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
         •
         {getReadingTime(article.body)} min read
       </small>
+
       <h1>{article.data.title}</h1>
+
+      {article.data.cover
+        ? <img src={article.data.cover} />
+        : <></>
+      }
     </div>
 
-    <slot />
+    <div class="[&>h2>a]:font-bold [&>h3>a]:font-semibold">
+      <slot />
+    </div>
   </article>
 </Layout>
 

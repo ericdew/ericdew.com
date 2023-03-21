@@ -4,7 +4,7 @@ import Article from "../../layouts/Article.astro";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles", ({ data }) => {
-    return import.meta.env.DEV || (!data.draft && data.publishedDate < new Date());
+    return import.meta.env.DEV || (!data.draft && data.published < new Date());
   });
 
   return articles.map((article) => ({
