@@ -13,3 +13,18 @@ const { src } = Astro.props as Props
   muted
   playsinline
 ></video>
+
+<script>
+  // Remove autoplay from videos when `prefers-reduced-motion: reduce`
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+  if (prefersReducedMotion) {
+    const autoplayVideos = document.querySelectorAll("video[autoplay]")
+
+    autoplayVideos.forEach((video) => {
+      video.removeAttribute("autoplay")
+      // Add controls attribute so user can still play the video if they want
+      video.setAttribute("controls", "true")
+    })
+  }
+</script>

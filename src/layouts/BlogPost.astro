@@ -4,10 +4,10 @@ import type { CollectionEntry } from "astro:content";
 import Grain from "../components/ui/Grain.astro";
 
 export interface Props {
-  article: CollectionEntry<"articles">;
+  post: CollectionEntry<"blog">;
 }
 
-const { article } = Astro.props;
+const { post } = Astro.props;
 
 const WORDS_PER_MINUTE = 200;
 
@@ -19,21 +19,21 @@ function getReadingTime(content: string) {
 }
 ---
 
-<Layout title={article.data.title} description={article.data.description} hidden={article.data.draft}>
+<Layout title={post.data.title} description={post.data.description} hidden={post.data.draft}>
   <Grain subtle={true} />
 
   <article class="prose prose-neutral m-auto py-16 px-4 sm:px-0 prose-img:m-auto prose-video:m-auto prose-img:rounded-xl prose-video:rounded-xl dark:prose-invert md:prose-lg lg:prose-xl">
     <div class="text-center">
       <small>
-        <time datetime={article.data.published.toISOString()}>{article.data.published.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
+        <time datetime={post.data.published.toISOString()}>{post.data.published.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
         •
-        {getReadingTime(article.body)} min read
+        {getReadingTime(post.body)} min read
       </small>
 
-      <h1>{article.data.title}</h1>
+      <h1>{post.data.title}</h1>
 
-      {article.data.cover
-        ? <img src={article.data.cover} />
+      {post.data.cover
+        ? <img src={post.data.cover} />
         : <></>
       }
     </div>
