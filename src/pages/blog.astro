@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import Grain from "../components/ui/Grain.astro";
 import FormattedDate from "../components/ui/FormattedDate.astro";
 import Navbar from "../components/ui/Navbar.astro";
+import { Image } from "@astrojs/image/components";
 
 const posts = await getCollection("blog", ({ data }) => {
   return import.meta.env.DEV || (!data.draft && data.published < new Date());
@@ -26,10 +27,7 @@ const posts = await getCollection("blog", ({ data }) => {
               class="block rounded-lg border border-gray-200 bg-white p-6 shadow dark:border-zinc-700 dark:bg-zinc-800"
             >
               {post.data.cover
-                ? <img
-                    class="rounded-lg mb-6"
-                    src={post.data.cover}
-                  />
+                ? <Image class="rounded-lg mb-6" src={post.data.cover} alt="" width={1200} height={630} />
                 : <></>
               }
               
