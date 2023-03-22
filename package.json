@@ -15,7 +15,7 @@
     "@astrojs/mdx": "^0.16.0",
     "@astrojs/partytown": "^1.0.3",
     "@astrojs/tailwind": "^3.0.1",
-    "astro": "^2.0.6",
+    "astro": "^2.1.4",
     "astro-icon": "^0.8.0",
     "cloudinary": "^1.33.0",
     "sharp": "^0.31.3",
