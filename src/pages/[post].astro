@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout.astro";
 import Grain from "../components/ui/Grain.astro";
 import FormattedDate from "../components/ui/FormattedDate.astro";
 import Navbar from "../components/ui/Navbar.astro";
+import { Image } from "@astrojs/image/components";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => {
@@ -49,7 +50,7 @@ function getReadingTime(content: string) {
       <h1>{post.data.title}</h1>
 
       {post.data.cover
-        ? <img src={post.data.cover} />
+        ? <Image src={post.data.cover} alt="" width={1200} height={630} />
         : <></>
       }
     </div>

@@ -63,6 +63,7 @@ const resources = search.resources as CloudinaryResource[];
           class="resource absolute align-bottom top-0 w-full h-full object-cover opacity-0 transition-opacity ease-in duration-1000 fullscreen:pointer-events-none"
           onload="this.style.opacity=1; this.parentNode.previousElementSibling.style.display = 'none';" // fade in image after loading, remove loading icon
           loading={`${index <= 5 ? "eager" : "lazy"}`}
+          background="#000"
           alt={`"Concert Photograph by Eric Dew${CloudinaryResource.context ? " of " + CloudinaryResource.context.alt : ""}`}
         />
       ) : (
@@ -432,7 +433,7 @@ const resources = search.resources as CloudinaryResource[];
     startY = e.changedTouches[0].screenY;
   }, { passive: true });
 
-  document.addEventListener("touchmove", (e) => {
+  document.addEventListener("touchmove", () => {
     isScrolling = true;
   }, { passive: true });
 
