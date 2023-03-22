@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import Grain from "../components/ui/Grain.astro";
 import FormattedDate from "../components/ui/FormattedDate.astro";
+import Navbar from "../components/ui/Navbar.astro";
 
 const posts = await getCollection("blog", ({ data }) => {
   return import.meta.env.DEV || (!data.draft && data.published < new Date());
@@ -12,7 +13,9 @@ const posts = await getCollection("blog", ({ data }) => {
 <Layout title="Blog" description="Blog by Eric Dew">
   <Grain />
 
-  <h1 class="pt-8 text-center text-4xl font-extrabold">Blog</h1>
+  <Navbar />
+
+  <h1 class="pt-4 text-center text-4xl font-extrabold">Blog</h1>
   <section class="px-4 lg:px-0 py-8 gap-20">
     <ul class="flex flex-col items-center mx-auto gap-y-4 md:gap-y-6 lg:gap-y-8">
       {

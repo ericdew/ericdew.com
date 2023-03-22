@@ -3,6 +3,7 @@ import { getCollection, CollectionEntry } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import Grain from "../components/ui/Grain.astro";
 import FormattedDate from "../components/ui/FormattedDate.astro";
+import Navbar from "../components/ui/Navbar.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => {
@@ -35,7 +36,9 @@ function getReadingTime(content: string) {
 <Layout title={post.data.title} description={post.data.description} hidden={post.data.draft}>
   <Grain subtle={true} />
 
-  <article class="prose prose-neutral m-auto py-16 px-4 sm:px-0 prose-img:m-auto prose-video:m-auto prose-img:rounded-xl prose-video:rounded-xl dark:prose-invert md:prose-lg lg:prose-xl">
+  <Navbar />
+
+  <article class="prose prose-neutral m-auto pt-4 pb-16 px-4 sm:px-0 prose-img:m-auto prose-video:m-auto prose-img:rounded-xl prose-video:rounded-xl dark:prose-invert md:prose-lg lg:prose-xl">
     <div class="text-center">
       <small>
         <FormattedDate date={post.data.published} />

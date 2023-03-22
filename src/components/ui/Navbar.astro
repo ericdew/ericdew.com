@@ -1,0 +1,17 @@
+<nav class="flex justify-center">
+  <ul class="flex gap-8 text-lg pt-8 pb-4 font-bold">
+    {
+      [
+        ["Showcase", "/"],
+        ["Blog", "/blog"],
+      ].map(([label, url]) => (
+        <li>
+          <a href={url} class="group dark:hover:text-slate-400 transition-colors duration-150">
+            {label}
+            <span class="block max-w-0 group-hover:max-w-full transition-all duration-150 h-0.5 bg-slate-400"></span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
