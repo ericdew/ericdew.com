@@ -32,7 +32,7 @@ const posts = await getCollection("blog", ({ data }) => {
               <h2 class="mb-2 text-2xl font-bold tracking-tight">{post.data.title}</h2>
               
               <small>
-                <time datetime={post.data.published.toISOString()}>{post.data.published.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time>
+                <time datetime={post.data.published.toISOString()}>{post.data.published.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}</time>
               </small>
 
               <p class="pt-2 font-normal text-gray-700 dark:text-gray-400">{post.data.description}</p>

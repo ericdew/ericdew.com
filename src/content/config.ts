@@ -9,9 +9,7 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     cover: z.string().optional(),
-    author: z.string().default("Eric Dew"),
     published: z.date(),
-    updated: z.string().transform((str: string) => new Date(str)).optional(),
     draft: z.boolean().default(false),
   }),
   slug: ({ id, defaultSlug }) => {
