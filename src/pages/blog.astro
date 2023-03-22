@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import Grain from "../components/ui/Grain.astro";
+import FormattedDate from "../components/ui/FormattedDate.astro";
 
 const posts = await getCollection("blog", ({ data }) => {
   return import.meta.env.DEV || (!data.draft && data.published < new Date());
@@ -32,7 +33,7 @@ const posts = await getCollection("blog", ({ data }) => {
               <h2 class="mb-2 text-2xl font-bold tracking-tight">{post.data.title}</h2>
               
               <small>
-                <time datetime={post.data.published.toISOString()}>{post.data.published.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}</time>
+                <FormattedDate date={post.data.published} />
               </small>
 
               <p class="pt-2 font-normal text-gray-700 dark:text-gray-400">{post.data.description}</p>
